@@ -1,6 +1,14 @@
 from sx126x import sx126x
 import time
 import threading
+import mysql.connector
+
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="spring",
+  database="weatherdata"
+)
 
 SERIAL_PORT = "/dev/ttyS0"
 
