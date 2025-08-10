@@ -1,0 +1,31 @@
+from sx126x import sx126x
+import time
+import threading
+
+SERIAL_PORT = "/dev/ttyS0"
+
+lora = sx126x(
+    serial_num="/dev/serial0",
+    freq=433,
+    addr=0x0022,
+    power=22,
+    rssi=True
+)
+
+def recv():
+    global message
+    while True:
+        msg = lora.receive()
+        if msg:
+            message = msg.split()
+            windspd = message[0]
+            atemp = message[1]
+            wtemp = message[2]
+
+t1 = threading.Thread(target=recv)
+
+t1.start()
+
+while True:
+    time.sleep(2)
+    
