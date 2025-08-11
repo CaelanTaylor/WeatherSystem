@@ -22,6 +22,7 @@ lora = sx126x(
 
 def recv():
     global message
+    global msg
     while True:
         msg = lora.receive()
         if msg:
