@@ -48,9 +48,9 @@ def recv():
             winddir = message[1]
             wtemp = message[2]
             atemp = message[3]
-            val = (getdate(), gettime(), location, windspd, winddir, wtemp, atemp)
-            mycursor.execute(sql, val)
-            mydb.commit()
+            #val = (getdate(), gettime(), location, windspd, winddir, wtemp, atemp)
+            #mycursor.execute(sql, val)
+            #mydb.commit()
 
 t1 = threading.Thread(target=recv)
 
@@ -59,4 +59,4 @@ t1.start()
 while True:
     time.sleep(1)
     if msg:
-        print(windspd)
+        print(message[1])
