@@ -4,6 +4,7 @@ import threading
 import mysql.connector
 
 global msg
+global message
 
 mydb = mysql.connector.connect(
   host="localhost",
