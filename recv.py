@@ -50,6 +50,9 @@ t1 = threading.Thread(target=recv)
 
 t1.start()
 
+print(gettime())
+print(getdate())
+
 while True:
     time.sleep(1)
     if msg:
