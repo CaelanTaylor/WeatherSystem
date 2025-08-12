@@ -33,6 +33,7 @@ def recv():
             windspd = message[0]
             atemp = message[1]
             wtemp = message[2]
+            print(f"Wind Speed: {windspd} m/s, Air Temp: {atemp} °C, Water Temp: {wtemp} °C")
 
 t1 = threading.Thread(target=recv)
 
