@@ -29,7 +29,11 @@ def recv():
         msg = lora.receive()
         if msg:
             print(msg)
-            
+            message = msg.split()
+            windspd = message[0]
+            atemp = message[1]
+            wtemp = message[2]
+
 t1 = threading.Thread(target=recv)
 
 t1.start()

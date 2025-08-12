@@ -21,7 +21,7 @@ dest_low = DEST_ADDR & 0xFF
 freq_offset = FREQ_MHZ - 410  # For 433 MHz → 23 → 0x17
 
 # Build full message
-payload = b"\n\n\nHello node 0x22!"
+payload = b"\n\n\nHello node 0x22"
 message = bytes([dest_high, dest_low, freq_offset]) + payload
 
 # Send
