@@ -35,6 +35,7 @@ def recv():
             windspd = message[0]
             atemp = message[1]
             wtemp = message[2]
+            print(message[0])
 
 t1 = threading.Thread(target=recv)
 
@@ -42,5 +43,3 @@ t1.start()
 
 while True:
     time.sleep(1)
-    if msg:
-        print(message[0])
