@@ -8,6 +8,16 @@ global message
 
 message = None
 
+def getdate():
+    tm = time.localtime()
+    date = time.strftime("%d/%m/%Y", tm)
+    return date
+
+def gettime():
+    tm = time.localtime()
+    currtime = time.strftime("%H:%M:%S", tm)
+    return currtime
+
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
@@ -35,7 +45,6 @@ def recv():
             windspd = message[0]
             atemp = message[1]
             wtemp = message[2]
-            print(message[0])
 
 t1 = threading.Thread(target=recv)
 
