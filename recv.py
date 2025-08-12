@@ -39,4 +39,5 @@ t1.start()
 
 while True:
     time.sleep(2)
-    print(msg)
+    if msg:
+        print(msg)
