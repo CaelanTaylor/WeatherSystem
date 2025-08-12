@@ -38,6 +38,5 @@ t1 = threading.Thread(target=recv)
 t1.start()
 
 while True:
-    time.sleep(2)
     if msg:
         print(msg)
