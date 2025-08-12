@@ -15,7 +15,7 @@ mydb = mysql.connector.connect(
 SERIAL_PORT = "/dev/ttyS0"
 
 lora = sx126x(
-    serial_num="/dev/serial0",
+    serial_num="/dev/ttyS0",
     freq=433,
     addr=0x0022,
     power=22,
@@ -41,3 +41,4 @@ while True:
     time.sleep(1)
     if message:
         print(message)
+
