@@ -5,9 +5,6 @@ import mysql.connector
 
 location = "Test Location"
 
-global msg
-global message
-
 message = None
 
 def getdate():
@@ -43,6 +40,7 @@ lora = sx126x(
 
 def recv():
     while True:
+        global msg, message, windspd, winddir, wtemp, atemp
         msg = lora.receive()
         if msg:
             message = msg.split()
