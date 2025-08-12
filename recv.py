@@ -3,6 +3,8 @@ import time
 import threading
 import mysql.connector
 
+global msg
+
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
@@ -36,8 +38,5 @@ t1 = threading.Thread(target=recv)
 t1.start()
 
 while True:
-    if msg:
-        print(msg)
-    
-#ming
-
+    time.sleep(2)
+    print(msg)
