@@ -26,7 +26,7 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-sql = "INSERT INTO weather (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s)"
+sql = "INSERT INTO weather (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
 SERIAL_PORT = "/dev/ttyS0"
 
@@ -48,9 +48,9 @@ def recv():
             winddir = message[1]
             wtemp = message[2]
             atemp = message[3]
-            #val = (getdate(), gettime(), location, windspd, winddir, wtemp, atemp)
-            #mycursor.execute(sql, val)
-            #mydb.commit()
+            val = (getdate(), gettime(), location, windspd, winddir, wtemp, atemp)
+            mycursor.execute(sql, val)
+            mydb.commit()
 
 t1 = threading.Thread(target=recv)
 
