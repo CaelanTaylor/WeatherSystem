@@ -28,6 +28,7 @@ def recv():
     while True:
         msg = lora.receive()
         if msg:
+            print(msg)
             message = msg.split()
             windspd = message[0]
             atemp = message[1]
