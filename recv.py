@@ -40,6 +40,4 @@ t1.start()
 
 while True:
     time.sleep(1)
-    if msg:
-        print(msg)
 
