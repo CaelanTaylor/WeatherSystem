@@ -3,6 +3,8 @@ import time
 import threading
 import mysql.connector
 
+location = "Test Location"
+
 global msg
 global message
 
@@ -25,6 +27,10 @@ mydb = mysql.connector.connect(
   database="weatherdata"
 )
 
+mycursor = mydb.cursor()
+
+sql = "INSERT INTO weather (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s)"
+
 SERIAL_PORT = "/dev/ttyS0"
 
 lora = sx126x(
@@ -36,22 +42,21 @@ lora = sx126x(
 )
 
 def recv():
-    global message
-    global msg
     while True:
         msg = lora.receive()
         if msg:
             message = msg.split()
             windspd = message[0]
-            atemp = message[1]
+            winddir = message[1]
             wtemp = message[2]
+            atemp = message[3]
+            val = (getdate(), gettime(), location, windspd, winddir, wtemp, atemp)
+            mycursor.execute(sql, val)
+            mydb.commit()
 
 t1 = threading.Thread(target=recv)
 
 t1.start()
-
-print(gettime())
-print(getdate())
 
 while True:
     time.sleep(1)

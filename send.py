@@ -21,7 +21,12 @@ dest_low = DEST_ADDR & 0xFF
 freq_offset = FREQ_MHZ - 410  # For 433 MHz → 23 → 0x17
 
 # Build full message
-payload = b"\n\n\nHello node 0x22"
+windspd = 12.3  # Example wind speed
+winddir = 270  # Example wind direction
+wtemp = 15.0  # Example wind temperature
+atemp = 20.0  # Example ambient temperature
+
+payload = f"\n\n\n{windspd} {winddir} {wtemp} {atemp}".encode()
 message = bytes([dest_high, dest_low, freq_offset]) + payload
 
 # Send
