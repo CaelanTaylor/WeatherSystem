@@ -60,3 +60,19 @@ while True:
     time.sleep(1)
     if msg:
         print(message[1])
+        mycursor.execute("SELECT * FROM weatherdata")
+        rows = mycursor.fetchall()
+        columns = [desc[0] for desc in mycursor.description]
+
+        # Format the data as a string
+        db_content = "Weather Data:\n"
+        db_content += ", ".join(columns) + "\n"
+        for row in rows:
+            db_content += ", ".join(str(item) for item in row) + "\n"
+        response = ollama.chat(
+        model='gemma3:1b',
+        messages=[
+            {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends."}
+        ]
+        )
+        print(response['message']['content'])
