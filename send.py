@@ -1,7 +1,7 @@
 from sx126x import sx126x
 import time
 
-SERIAL_PORT = "/dev/serial0"
+SERIAL_PORT = "/dev/ttyS0"
 FREQ_MHZ = 433
 DEST_ADDR = 0x0022
 
