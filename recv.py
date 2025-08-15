@@ -60,7 +60,7 @@ t1.start()
 while True:
     time.sleep(1)
     if msg:
-        print(message[1])
+        print(msg)
         mycursor.execute("SELECT * FROM weatherdata")
         rows = mycursor.fetchall()
         columns = [desc[0] for desc in mycursor.description]
