@@ -77,9 +77,9 @@ while True:
         for row in rows:
             db_content += ", ".join(str(item) for item in row) + "\n"
         response = ollama.chat(
-        model='gemma3:1b',
-        messages=[
-            {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends."}
-        ]
+            model='gemma3:1b',
+            messages=[
+                {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends."}
+            ]
         )
         print(response['message']['content'])
