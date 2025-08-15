@@ -2,6 +2,7 @@ from sx126x import sx126x
 import time
 import threading
 import mysql.connector
+import ollama
 
 location = "Test Location"
 
