@@ -3,6 +3,7 @@ import time
 import threading
 import mysql.connector
 import ollama
+import queue
 
 location = "Test Location"
 
@@ -42,6 +43,8 @@ lora = sx126x(
     rssi=True
 )
 
+msg_queue = queue.Queue()
+
 def recv():
     global msg
     while True:
@@ -55,16 +58,15 @@ def recv():
             val = (getdate(), gettime(), location, windspd, winddir, wtemp, atemp)
             mycursor.execute(sql, val)
             mydb.commit()
-            print(msg)
-
+            msg_queue.put(msg)
 t1 = threading.Thread(target=recv)
 
 t1.start()
 
 while True:
     time.sleep(1)
-    if msg:
-        print(msg)
+    while not msg_queue.empty():
+        print(msg_queue.get())
         
 mycursor.execute("SELECT * FROM weatherdata")
 rows = mycursor.fetchall()
