@@ -55,6 +55,7 @@ def recv():
             val = (getdate(), gettime(), location, windspd, winddir, wtemp, atemp)
             mycursor.execute(sql, val)
             mydb.commit()
+            print(msg)
 
 t1 = threading.Thread(target=recv)
 
