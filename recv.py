@@ -6,6 +6,8 @@ import ollama
 
 location = "Test Location"
 
+global msg, message, windspd, winddir, wtemp, atemp
+
 message = None
 msg = None  
 
@@ -40,12 +42,8 @@ lora = sx126x(
     rssi=True
 )
 
-
-global msg, message, windspd, winddir, wtemp, atemp
-
 def recv():
     while True:
-        global msg, message, windspd, winddir, wtemp, atemp
         msg = lora.receive()
         if msg:
             message = msg.split()
