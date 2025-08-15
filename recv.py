@@ -7,6 +7,7 @@ import ollama
 location = "Test Location"
 
 message = None
+msg = None  
 
 def getdate():
     tm = time.localtime()
