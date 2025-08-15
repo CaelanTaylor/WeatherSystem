@@ -43,8 +43,8 @@ lora = sx126x(
 )
 
 def recv():
+    global msg
     while True:
-        global msg
         msg = lora.receive()
         if msg:
             message = msg.split()
