@@ -40,6 +40,9 @@ lora = sx126x(
     rssi=True
 )
 
+
+global msg, message, windspd, winddir, wtemp, atemp
+
 def recv():
     while True:
         global msg, message, windspd, winddir, wtemp, atemp
