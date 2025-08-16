@@ -79,7 +79,7 @@ while True:
         response = ollama.chat(
             model='gemma3:1b',
             messages=[
-                {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends."}
+                {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the next day."}
             ]
         )
         print(response['message']['content'])
