@@ -76,6 +76,7 @@ while True:
         db_content += ", ".join(columns) + "\n"
         for row in rows:
             db_content += ", ".join(str(item) for item in row) + "\n"
+        print("1")
         response = ollama.chat(
             model='gemma3:270m',  # or 'mistral', etc.
             messages=[
