@@ -32,7 +32,7 @@ else:
 
   
 response = ollama.chat(
-    model='qwen2.5:0.5b',  # or 'mistral', etc.
+    model='gemma3:1b',  # or 'mistral', etc.
     messages=[
         {'role': 'user', 'content': f"Here is the weather forecast:\n\n{data}\n\nCreate a simple forecast for the morning, noon, afternoon, evening, night and early morning for each of the days. Units in knots and celsius"}
     ]
