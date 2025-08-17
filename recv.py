@@ -67,6 +67,7 @@ while True:
     time.sleep(1)
     while not msg_queue.empty():
         print(msg_queue.get())
+        start = time.time()
         mycursor.execute("SELECT * FROM weatherdata")
         rows = mycursor.fetchall()
         columns = [desc[0] for desc in mycursor.description]
@@ -84,3 +85,5 @@ while True:
             ]
         )
         print(response['message']['content'])
+        finish = time.time()
+        print(f"Time taken for Ollama response: {finish - start:.2f} seconds")
