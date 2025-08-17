@@ -78,7 +78,7 @@ while True:
             db_content += ", ".join(str(item) for item in row) + "\n"
         print("1")
         response = ollama.chat(
-            model='qwen2.5:0.5b',  # or 'mistral', etc.
+            model='smollm2:360m',  # or 'mistral', etc.
             messages=[
                 {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
             ]
