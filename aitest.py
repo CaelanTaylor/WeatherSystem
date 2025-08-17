@@ -2,9 +2,8 @@ from sx126x import sx126x
 import time
 import threading
 import mysql.connector
+import ollama
 import queue
-import subprocess
-import tempfile
 
 location = "Test Location"
 
@@ -64,23 +63,6 @@ t1 = threading.Thread(target=recv)
 
 t1.start()
 
-
-
-def run_llamacpp(model_path, prompt):
-    with tempfile.NamedTemporaryFile(mode='w+', delete=False) as prompt_file:
-        prompt_file.write(prompt)
-        prompt_file.flush()
-        result = subprocess.run(
-            [
-                "./llama.cpp/main",  # Adjust path to llama.cpp binary as needed
-                "-m", model_path,
-                "-p", prompt
-            ],
-            capture_output=True,
-            text=True
-        )
-        return result.stdout
-
 start = time.time()
 mycursor.execute("SELECT * FROM weatherdata")
 rows = mycursor.fetchall()
@@ -92,29 +74,15 @@ db_content += ", ".join(columns) + "\n"
 for row in rows:
     db_content += ", ".join(str(item) for item in row) + "\n"
 print("1")
-prompt = f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."
-response = run_llamacpp("models/tinyllama-latest.gguf", prompt)
-print(response)
+response = ollama.chat(
+    model='qwen2.5:0.5b',  # or 'mistral', etc.
+    messages=[
+        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
+    ]
+)
+print(response['message']['content'])
 finish = time.time()
-print(f"Time taken for Tinyllama:latest response: {finish - start:.2f} seconds")
-
-start = time.time()
-mycursor.execute("SELECT * FROM weatherdata")
-
-rows = mycursor.fetchall()
-columns = [desc[0] for desc in mycursor.description]
-
-# Format the data as a string
-db_content = "Weather Data:\n"
-db_content += ", ".join(columns) + "\n"
-for row in rows:
-    db_content += ", ".join(str(item) for item in row) + "\n"
-print("1")
-prompt = f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."
-response = run_llamacpp("models/gemma3-270m.gguf", prompt)
-print(response)
-finish = time.time()
-print(f"Time taken for Gemma3:270m response: {finish - start:.2f} seconds")
+print(f"Time taken for qwen2.5:0.5 response: {finish - start:.2f} seconds")
 
 start = time.time()
 mycursor.execute("SELECT * FROM weatherdata")
@@ -127,9 +95,13 @@ db_content += ", ".join(columns) + "\n"
 for row in rows:
     db_content += ", ".join(str(item) for item in row) + "\n"
 print("1")
-prompt = f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."
-response = run_llamacpp("models/gemma3-1b.gguf", prompt)
-print(response)
+response = ollama.chat(
+    model='smollm2:135m',  # or 'mistral', etc.
+    messages=[
+        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
+    ]
+)
+print(response['message']['content'])
 finish = time.time()
 print(f"Time taken for Smollm2:135m response: {finish - start:.2f} seconds")
 
@@ -144,8 +116,117 @@ db_content += ", ".join(columns) + "\n"
 for row in rows:
     db_content += ", ".join(str(item) for item in row) + "\n"
 print("1")
-prompt = f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."
-response = run_llamacpp("models/llama3.2-1b.gguf", prompt)
-print(response)
+response = ollama.chat(
+    model='smollm2:360m',  # or 'mistral', etc.
+    messages=[
+        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
+    ]
+)
+print(response['message']['content'])
+finish = time.time()
+print(f"Time taken for Smollm2:360m response: {finish - start:.2f} seconds")
+
+start = time.time()
+mycursor.execute("SELECT * FROM weatherdata")
+rows = mycursor.fetchall()
+columns = [desc[0] for desc in mycursor.description]
+
+# Format the data as a string
+db_content = "Weather Data:\n"
+db_content += ", ".join(columns) + "\n"
+for row in rows:
+    db_content += ", ".join(str(item) for item in row) + "\n"
+print("1")
+response = ollama.chat(
+    model='phi3:mini',  # or 'mistral', etc.
+    messages=[
+        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
+    ]
+)
+print(response['message']['content'])
+finish = time.time()
+print(f"Time taken for phi3:mini response: {finish - start:.2f} seconds")
+
+start = time.time()
+mycursor.execute("SELECT * FROM weatherdata")
+rows = mycursor.fetchall()
+columns = [desc[0] for desc in mycursor.description]
+
+# Format the data as a string
+db_content = "Weather Data:\n"
+db_content += ", ".join(columns) + "\n"
+for row in rows:
+    db_content += ", ".join(str(item) for item in row) + "\n"
+print("1")
+response = ollama.chat(
+    model='tinyllama:latest',  # or 'mistral', etc.
+    messages=[
+        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
+    ]
+)
+print(response['message']['content'])
+finish = time.time()
+print(f"Time taken for Tinyllama:latest response: {finish - start:.2f} seconds")
+
+start = time.time()
+mycursor.execute("SELECT * FROM weatherdata")
+rows = mycursor.fetchall()
+columns = [desc[0] for desc in mycursor.description]
+
+# Format the data as a string
+db_content = "Weather Data:\n"
+db_content += ", ".join(columns) + "\n"
+for row in rows:
+    db_content += ", ".join(str(item) for item in row) + "\n"
+print("1")
+response = ollama.chat(
+    model='gemma3:270m',  # or 'mistral', etc.
+    messages=[
+        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
+    ]
+)
+print(response['message']['content'])
+finish = time.time()
+print(f"Time taken for Gemma3:270m response: {finish - start:.2f} seconds")
+
+start = time.time()
+mycursor.execute("SELECT * FROM weatherdata")
+rows = mycursor.fetchall()
+columns = [desc[0] for desc in mycursor.description]
+
+# Format the data as a string
+db_content = "Weather Data:\n"
+db_content += ", ".join(columns) + "\n"
+for row in rows:
+    db_content += ", ".join(str(item) for item in row) + "\n"
+print("1")
+response = ollama.chat(
+    model='gemma3:1b',  # or 'mistral', etc.
+    messages=[
+        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
+    ]
+)
+print(response['message']['content'])
+finish = time.time()
+print(f"Time taken for Smollm2:135m response: {finish - start:.2f} seconds")
+
+start = time.time()
+mycursor.execute("SELECT * FROM weatherdata")
+rows = mycursor.fetchall()
+columns = [desc[0] for desc in mycursor.description]
+
+# Format the data as a string
+db_content = "Weather Data:\n"
+db_content += ", ".join(columns) + "\n"
+for row in rows:
+    db_content += ", ".join(str(item) for item in row) + "\n"
+print("1")
+response = ollama.chat(
+    model='llama3.2:1b',  # or 'mistral', etc.
+    messages=[
+        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
+    ]
+)
+print(response['message']['content'])
 finish = time.time()
 print(f"Time taken for llama3.2:1b response: {finish - start:.2f} seconds")
