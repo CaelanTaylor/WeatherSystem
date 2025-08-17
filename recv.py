@@ -63,27 +63,6 @@ t1 = threading.Thread(target=recv)
 
 t1.start()
 
-start = time.time()
-mycursor.execute("SELECT * FROM weatherdata")
-rows = mycursor.fetchall()
-columns = [desc[0] for desc in mycursor.description]
-
-# Format the data as a string
-db_content = "Weather Data:\n"
-db_content += ", ".join(columns) + "\n"
-for row in rows:
-    db_content += ", ".join(str(item) for item in row) + "\n"
-print("Starting")
-response = ollama.chat(
-    model='smollm2:135m',  # or 'mistral', etc.
-    messages=[
-        {'role': 'user', 'content': f"Here is the weather database:\n\n{db_content}\n\nSummarize the recent weather trends for\n\n{location}\n\nand make a prediction for the time until the next day. The units are in knots and celsius."}
-    ]
-)
-print(response['message']['content'])
-finish = time.time()
-print(f"Time taken for Ollama response: {finish - start:.2f} seconds")
-
 while True:
     time.sleep(1)
     while not msg_queue.empty():
