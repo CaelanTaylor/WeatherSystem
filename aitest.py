@@ -45,23 +45,6 @@ lora = sx126x(
 
 msg_queue = queue.Queue()
 
-def recv():
-    global msg
-    while True:
-        msg = lora.receive()
-        if msg:
-            message = msg.split()
-            windspd = message[0]
-            winddir = message[1]
-            wtemp = message[2]
-            atemp = message[3]
-            val = (getdate(), gettime(), location, windspd, winddir, wtemp, atemp)
-            mycursor.execute(sql, val)
-            mydb.commit()
-            msg_queue.put(msg)
-t1 = threading.Thread(target=recv)
-
-t1.start()
 
 start = time.time()
 mycursor.execute("SELECT * FROM weatherdata")
