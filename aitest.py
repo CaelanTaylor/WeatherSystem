@@ -208,7 +208,7 @@ response = ollama.chat(
 )
 print(response['message']['content'])
 finish = time.time()
-print(f"Time taken for Smollm2:135m response: {finish - start:.2f} seconds")
+print(f"Time taken for Gemma3:1b response: {finish - start:.2f} seconds")
 
 start = time.time()
 mycursor.execute("SELECT * FROM weatherdata")
