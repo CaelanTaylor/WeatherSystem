@@ -27,7 +27,7 @@ body{
 
 @font-face {
     font-family: "outfit";
-    src: url("fonts/Outfit.ttf") format("truetype");
+    src: url("fonts/Outfit.ttf");
 }
 
 .navbar h1{
