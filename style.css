@@ -51,3 +51,9 @@ body{
 .navitems ul li{
     margin:0 10px;
 }
+
+.navitems ul li a{
+    text-decoration:none;
+    color:white;
+    font-size:1.2rem;
+}
