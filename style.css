@@ -22,7 +22,7 @@ body{
     display:flex;
     align-items:center;
     padding:0 20px;
-    font-family
+    font-family: outfit;
 }
 
 @font-face {
