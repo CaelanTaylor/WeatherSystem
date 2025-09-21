@@ -43,6 +43,7 @@ body{
 }
 
 /* Responsive Navbar */
+
 @media (max-width: 900px) {
     .navbar {
         flex-direction: column;
