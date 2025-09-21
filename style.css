@@ -11,62 +11,9 @@ body{
     overflow-x:hidden;
 }
 
-.navbar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:7vh;
-    background-color:black;
-    color:white;
-    display:flex;
-    align-items:center;
-    padding:0 20px;
-    font-family: outfit;
-}
-
 @font-face {
     font-family: "outfit";
     src: url("fonts/Outfit.ttf");
-}
-
-.navbar h1{
-    font-size:2rem;
-    margin:0;
-}
-
-.navitems{
-    display:flex;
-    flex-direction:row;
-    width: 60vw;
-    margin-left:auto;
-    margin-right:0;
-}
-
-.navitems ul{
-    list-style:none;
-    margin: 0;
-    padding:0;
-    display:flex;
-    justify-content:space-around;
-    flex-direction:row;
-    width: 100%;
-}
-
-.navitems ul li{
-    margin:0 10px;
-}
-
-.navitems ul li a{
-    text-decoration:none;
-    color:white;
-    font-size:1.5rem;
-}
-
-.navitems ul li a:hover{
-    text-decoration:underline;
-    color:white;
-    font-size:1.5rem;
 }
 
 .content{
