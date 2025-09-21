@@ -5,12 +5,16 @@ import mysql.connector
 import ollama
 import queue
 
+#Set Variables
+
 location = "Test Location"
 
 global msg, message, windspd, winddir, wtemp, atemp
 
 message = None
 msg = None  
+
+#Set timing functions
 
 def getdate():
     tm = time.localtime()
@@ -22,6 +26,8 @@ def gettime():
     currtime = time.strftime("%H:%M:%S", tm)
     return currtime
 
+#Set up database connection
+
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
@@ -32,6 +38,8 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+
+#Set up LoRa connection
 
 SERIAL_PORT = "/dev/ttyS0"
 

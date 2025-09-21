@@ -94,3 +94,45 @@ body{
     background-color:black;
     margin-top:10px;
 }
+
+/* Responsive Navbar */
+@media (max-width: 900px) {
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        align-items: flex-start;
+        padding: 10px;
+    }
+    .navitems {
+        width: 100vw;
+        margin: 0;
+    }
+    .navitems ul {
+        flex-direction: column;
+        width: 100%;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+    .navitems ul li {
+        margin: 10px 0;
+    }
+    .navbar h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Even smaller screens */
+@media (max-width: 600px) {
+    .navbar h1 {
+        font-size: 1.1rem;
+    }
+    .navitems ul li a {
+        font-size: 1rem;
+    }
+    .title h1 {
+        font-size: 2rem;
+    }
+    .title .line {
+        width: 90vw;
+    }
+}
