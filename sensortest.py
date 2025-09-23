@@ -3,7 +3,7 @@ import time
 
 # Open SPI bus
 spi = spidev.SpiDev()
-spi.open(1, 0)  # (bus 0, device 0 → CE0)
+spi.open(0, 0)  # (bus 0, device 0 → CE0)
 spi.max_speed_hz = 1350000  # 1.35 MHz
 
 def read_channel(channel):
