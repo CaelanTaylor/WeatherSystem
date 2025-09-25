@@ -31,7 +31,9 @@ def get_wind_dir():
     return wind_dir
 
 print(get_wind_speed())
-print(get_wind_dir())
+
+while True:
+    print(get_wind_dir())
     
 
 # Build full message
