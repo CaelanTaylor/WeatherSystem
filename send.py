@@ -25,10 +25,11 @@ def get_wind_speed():
     return wind_speed_knots
 
 def get_wind_dir():
-    """Get wind speed from the anemometer (channel 7)."""
+    """Get wind direction from the anemometer (channel 1), rounded to nearest 45°."""
     raw_value = read_channel(1)
     wind_dir = ((raw_value - 199) / (1014 - 199)) * 360  # Map 199–1014 to 0–360°
-    return wind_dir
+    wind_dir_rounded = round(wind_dir / 45) * 45         # Round to nearest 45°
+    return wind_dir_rounded
 
 print(get_wind_speed())
 
