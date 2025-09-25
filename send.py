@@ -21,7 +21,7 @@ def get_wind_speed():
     """Get wind speed from the anemometer (channel 7)."""
     raw_value = read_channel(7)
     wind_speed = (raw_value / 1023.0) * 30  # Convert to m/s
-    wind_speed_knots = speed * 1.94384      # Convert to knots
+    wind_speed_knots = wind_speed * 1.94384      # Convert to knots
     return round(wind_speed_knots, 1)
 
 def get_wind_dir():
