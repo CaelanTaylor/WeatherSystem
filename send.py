@@ -27,9 +27,8 @@ def get_wind_speed():
 def get_wind_dir():
     """Get wind speed from the anemometer (channel 7)."""
     raw_value = read_channel(1)
-    wind_dir = ((raw_value - 199) / 924.0) * 360  # Convert to degrees
+    wind_dir = ((raw_value - 204) / 920.0) * 360  # Convert to degrees
     return raw_value
-
 
 print(get_wind_speed())
 print(get_wind_dir())
