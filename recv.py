@@ -37,31 +37,27 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-def recv():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        HOST = ''  # Listen on all interfaces
-        PORT = 50000
-        s.bind((HOST, PORT))
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    HOST = ''  # Listen on all interfaces
+    PORT = 50000
+    s.bind((HOST, PORT))
+    while True:
         s.listen(1)
         conn, addr = s.accept()
         with conn:
-            while True:
-                data = conn.recv(1024)
-                if data:
-                    data_str = data.decode('utf-8')
-                    data_list = data_str.split(',')
-                    windspd, winddir, wtemp, atemp = map(float, data_list)
-                    
-                    # Get date and time
-                    date = getdate()
-                    currtime = gettime()
-                    
-                    # Prepare and execute SQL
-                    sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                    val = (date, currtime, location, windspd, winddir, wtemp, atemp)
-                    mycursor.execute(sql, val)
-                    mydb.commit()
-
-t1 = threading.Thread(target=recv)
-
-t1.start()
+            data = conn.recv(1024)
+            if data:
+                data_str = data.decode('utf-8')
+                data_list = data_str.split(',')
+                windspd, winddir, wtemp, atemp = map(float, data_list)
+                
+                # Get date and time
+                date = getdate()
+                currtime = gettime()
+                
+                # Prepare and execute SQL
+                sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                val = (date, currtime, location, windspd, winddir, wtemp, atemp)
+                mycursor.execute(sql, val)
+                mydb.commit()
