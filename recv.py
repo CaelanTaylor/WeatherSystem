@@ -4,9 +4,6 @@ import mysql.connector
 import ollama
 import socket
 
-HOST = ''  # Listen on all interfaces
-PORT = 5000
-
 #Set Variables
 
 location = "Test Location"
