@@ -11,7 +11,7 @@ PORT = 5000
 
 location = "Test Location"
 
-global msg, message, windspd, winddir, wtemp, atemp
+global msg, message, windspd, winddir, wtemp, atemp, data
 
 message = None
 msg = None  
@@ -40,20 +40,20 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 def recv():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        HOST = ''  # Listen on all interfaces
-        PORT = 5000
-        s.bind((HOST, PORT))
-        s.listen(1)
-        print("Waiting for connection...")
-        conn, addr = s.accept()
-        with conn:
-            print('Connected by', addr)
-            data = conn.recv(1024)
-            if data:
-                data_str = data.decode('utf-8')
-                data_list = data_str.split(',')
-                windspd, winddir, wtemp, atemp = map(float, data_list)
+    while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            HOST = ''  # Listen on all interfaces
+            PORT = 5000
+            s.bind((HOST, PORT))
+            s.listen(1)
+            conn, addr = s.accept()
+            with conn:
+                print('Connected by', addr)
+                data = conn.recv(1024)
+                if data:
+                    data_str = data.decode('utf-8')
+                    data_list = data_str.split(',')
+                    windspd, winddir, wtemp, atemp = map(float, data_list)
 t1 = threading.Thread(target=recv)
 
 t1.start()
