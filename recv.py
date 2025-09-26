@@ -15,6 +15,7 @@ global msg, message, windspd, winddir, wtemp, atemp, data
 
 message = None
 msg = None  
+data = None
 
 #Set timing functions
 
