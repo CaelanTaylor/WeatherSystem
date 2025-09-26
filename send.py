@@ -42,7 +42,9 @@ while True:
     time.sleep(5)  # Wait for 5 seconds between readings
     data_list = [get_wind_speed(), get_wind_dir(), wtemp, atemp]
     data_str = ','.join(str(x) for x in data_list)
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((HOST, PORT))
-        s.sendall(data_str.encode('utf-8'))
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(3)  # Optional: timeout after 3 seconds
+            s.connect((HOST, PORT))
+            s.sendall(data_str.encode('utf-8'))
 
