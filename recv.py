@@ -43,18 +43,20 @@ sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, 
 
 def recv():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((HOST, PORT))
-    s.listen(1)
-    print("Waiting for connection...")
-    conn, addr = s.accept()
-    with conn:
-        print('Connected by', addr)
-        data = conn.recv(1024)
-        if data:
-            data_str = data.decode('utf-8')
-            data_list = data_str.split(',')
-            windspd, winddir, wtemp, atemp = map(float, data_list)
-            print("Received:", windspd, winddir, wtemp, atemp)
+        HOST = ''  # Listen on all interfaces
+        PORT = 5000
+        s.bind((HOST, PORT))
+        s.listen(1)
+        print("Waiting for connection...")
+        conn, addr = s.accept()
+        with conn:
+            print('Connected by', addr)
+            data = conn.recv(1024)
+            if data:
+                data_str = data.decode('utf-8')
+                data_list = data_str.split(',')
+                windspd, winddir, wtemp, atemp = map(float, data_list)
+                print("Received:", windspd, winddir, wtemp, atemp)
 t1 = threading.Thread(target=recv)
 
 t1.start()
