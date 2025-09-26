@@ -47,4 +47,5 @@ while True:
             s.settimeout(3)  # Optional: timeout after 3 seconds
             s.connect((HOST, PORT))
             s.sendall(data_str.encode('utf-8'))
-
+    except Exception:
+        pass
