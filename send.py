@@ -1,6 +1,6 @@
 import time
 import spidev
-import time
+import socket
 
 # Open SPI bus
 spi = spidev.SpiDev()
@@ -31,14 +31,18 @@ def get_wind_dir():
     wind_dir_rounded = int((wind_dir) / 45) * 45  # Standard rounding to nearest 45°
     return wind_dir_rounded
 
-print(get_wind_speed())
+wtemp = 0
+atemp = 0
 
-while True:
-    print(get_wind_dir())
-    
+# Prepare data as a list
+data_list = [get_wind_speed(), get_wind_dir(), wtemp, atemp]
+data_str = ','.join(str(x) for x in data_list)
 
-# Build full message
+# Send data over socket
+HOST = '192.168.192.186'
+PORT = 5000
 
-
-#payload = f"{windspd} {winddir} {wtemp} {atemp}"
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((HOST, PORT))
+    s.sendall(data_str.encode('utf-8'))
 
