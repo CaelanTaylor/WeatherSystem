@@ -39,8 +39,6 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-
 def recv():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         HOST = ''  # Listen on all interfaces
@@ -56,7 +54,11 @@ def recv():
                 data_str = data.decode('utf-8')
                 data_list = data_str.split(',')
                 windspd, winddir, wtemp, atemp = map(float, data_list)
-                print("Received:", windspd, winddir, wtemp, atemp)
 t1 = threading.Thread(target=recv)
 
 t1.start()
+
+while True:
+    if data:
+        sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    time.sleep(0.5)
