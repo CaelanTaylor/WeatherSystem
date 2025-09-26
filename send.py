@@ -34,15 +34,15 @@ def get_wind_dir():
 wtemp = 0
 atemp = 0
 
-# Prepare data as a list
-data_list = [get_wind_speed(), get_wind_dir(), wtemp, atemp]
-data_str = ','.join(str(x) for x in data_list)
-
 # Send data over socket
 HOST = '192.168.192.186'
 PORT = 50000
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
-    s.sendall(data_str.encode('utf-8'))
+while True:
+    time.sleep(5)  # Wait for 5 seconds between readings
+    data_list = [get_wind_speed(), get_wind_dir(), wtemp, atemp]
+    data_str = ','.join(str(x) for x in data_list)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        s.sendall(data_str.encode('utf-8'))
 
