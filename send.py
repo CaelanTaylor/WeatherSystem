@@ -40,7 +40,7 @@ data_str = ','.join(str(x) for x in data_list)
 
 # Send data over socket
 HOST = '192.168.192.186'
-PORT = 5000
+PORT = 50000
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))

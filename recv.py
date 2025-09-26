@@ -40,7 +40,7 @@ mycursor = mydb.cursor()
 def recv():
    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         HOST = ''  # Listen on all interfaces
-        PORT = 5000
+        PORT = 50000
         s.bind((HOST, PORT))
         s.listen(1)
         conn, addr = s.accept()
