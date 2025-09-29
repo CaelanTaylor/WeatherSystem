@@ -55,6 +55,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 # Get date and time
                 date = getdate()
                 currtime = gettime()
+
+                print(windspd, winddir, wtemp, atemp)
                 
                 # Prepare and execute SQL
                 sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
