@@ -8,7 +8,7 @@ import spidev
 import socket
 import compass
 
-sensor = compass.QMC5883L()
+cmp = compass.QMC5883L()
 
 # Open SPI bus
 spi = spidev.SpiDev()
@@ -37,7 +37,7 @@ def get_wind_dir():
     raw_value = read_channel(1)
     # Map raw value to 0–360°
     relative_wind_dir = ((raw_value - 199) / (1014 - 199)) * 360
-    compass_heading = sensor.get_bearing()  # 0–360°
+    compass_heading = cmp.get_bearing()  # 0–360°
     corrected_heading = ((360 - compass_heading) % 360)
     true_wind_dir = ((relative_wind_dir + corrected_heading) % 360)
     # Round to nearest 45°
