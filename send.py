@@ -3,7 +3,7 @@ import spidev
 import socket
 import compass
 
-cmp = compass.QMC5883L()
+compile = compass.QMC5883L()
 
 # Open SPI bus
 spi = spidev.SpiDev()
