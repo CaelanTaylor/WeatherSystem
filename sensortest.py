@@ -38,11 +38,12 @@ def get_wind_dir():
     # Map raw value to 0–360°
     relative_wind_dir = ((raw_value - 199) / (1014 - 199)) * 360
     compass_heading = cmp.get_bearing()  # 0–360°
-    corrected_heading = ((360 - compass_heading) % 360)
-    true_wind_dir = (relative_wind_dir + (compass_heading + 180) % 360) % 360
+    # Correct compass heading by adding 180°
+    corrected_heading = (compass_heading + 180) % 360
+    true_wind_dir = (relative_wind_dir + corrected_heading) % 360
     print(relative_wind_dir, compass_heading, corrected_heading, true_wind_dir)
     # Round to nearest 45°
-    wind_dir_rounded = (int((true_wind_dir / 45) + 0.5) * 45)
+    wind_dir_rounded = int((true_wind_dir / 45) + 0.5) * 45
     return wind_dir_rounded
 
 wtemp = 0
