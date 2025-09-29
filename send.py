@@ -1,6 +1,9 @@
 import time
 import spidev
 import socket
+import compass
+
+sensor = compass.QMC5883L()
 
 # Open SPI bus
 spi = spidev.SpiDev()
@@ -25,10 +28,15 @@ def get_wind_speed():
     return wind_speed_knots
 
 def get_wind_dir():
-    """Get wind direction from the anemometer (channel 1), rounded to nearest 45°."""
+    """Get true wind direction using wind vane and corrected compass heading."""
     raw_value = read_channel(1)
-    wind_dir = ((raw_value - 199) / (1014 - 199)) * 360  # Map 199–1014 to 0–360°
-    wind_dir_rounded = int((wind_dir) / 45) * 45  # Standard rounding to nearest 45°
+    # Map raw value to 0–360°
+    relative_wind_dir = ((raw_value - 199) / (1014 - 199)) * 360
+    compass_heading = sensor.get_bearing()  # 0–360°
+    corrected_heading = (360 - compass_heading) % 360
+    true_wind_dir = (relative_wind_dir + corrected_heading) % 360
+    # Round to nearest 45°
+    wind_dir_rounded = int((true_wind_dir / 45) + 0.5) * 45
     return wind_dir_rounded
 
 wtemp = 0
