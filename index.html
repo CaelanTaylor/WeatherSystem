@@ -43,7 +43,7 @@
                     <div class="compass-gauge">
                         <svg width="100" height="100">
                             <circle cx="50" cy="50" r="40" stroke="#000" stroke-width="6" fill="none"/>
-                            <line id="wind-arrow" x1="50" y1="50" x2="50" y2="15" stroke="#f00" stroke-width="4"/>
+                            <polygon id="wind-arrow" points="50,22 46,50 54,50" fill="#f00"/>
                         </svg>
                         <div class="gauge-value" id="winddirection">--°</div>
                     </div>
@@ -92,7 +92,7 @@
                 const winddir = parseFloat(data.winddirection) || 0;
                 document.getElementById('winddirection').textContent = `${winddir.toFixed(0)}\u00B0`;
                 // Rotate wind arrow (triangle)
-                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir} 50 50)`);
+                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir - 90} 50 50)`);
                 // Wind Dir Label
                 const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
                 const dirIndex = Math.round(winddir / 45) % 8;
