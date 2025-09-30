@@ -2,6 +2,7 @@ import time
 import spidev
 import socket
 import compass
+from math import exp
 
 cmp = compass.QMC5883L()
 
@@ -23,7 +24,7 @@ def read_channel(channel):
 def get_wind_speed():
     """Get wind speed from the anemometer (channel 7)."""
     raw_value = read_channel(7)
-    wind_speed = (raw_value / 1023.0) * 30  # Convert to m/s
+    wind_speed = exp(30 * (raw_value / 1023.0))
     wind_speed_knots = wind_speed * 1.94384      # Convert to knots
     return wind_speed_knots
 
