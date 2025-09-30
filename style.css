@@ -93,6 +93,54 @@ body{
     margin-top:10px;
 }
 
+/* Dashboard styling */
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 3rem;
+    margin-top: 3rem;
+    font-family: 'outfit', Arial, sans-serif;
+}
+
+.weather-item {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem 2.5rem;
+    text-align: center;
+    min-width: 140px;
+}
+
+.weather-item .label {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+}
+
+.weather-item .value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 0.5rem;
+}
+
+.weather-item .unit {
+    font-size: 1rem;
+    color: #666;
+}
+
+.updated {
+    width: 100%;
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    font-family: 'outfit', Arial, sans-serif;
+    color: #222;
+}
+
 /* Responsive Navbar */
 @media (max-width: 900px) {
     .navbar {
