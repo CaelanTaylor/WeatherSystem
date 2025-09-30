@@ -22,9 +22,9 @@ def read_channel(channel):
     return data
 
 def get_wind_speed():
-    """Get wind speed from the anemometer (channel 7)."""
+    """Get wind speed from the ZTS-3000-FSJT-V05 sensor (channel 7)."""
     raw_value = read_channel(7)
-    wind_speed = exp(30 * (raw_value / 1023.0))
+    wind_speed = (raw_value / 1023.0) * 30  # Linear mapping: 0–1023 → 0–30 m/s
     wind_speed_knots = wind_speed * 1.94384
     # Round to 4 significant figures
     wind_speed_knots = float(f"{wind_speed_knots:.4g}")
