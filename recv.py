@@ -62,7 +62,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 print(windspd, winddir, wtemp, atemp)
                 
                 # Prepare and execute SQL
-                sql = "INSERT INTO weatherdata (datetime, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s)"
-                val = (getdatetime(), location, windspd, winddir, wtemp, atemp)
                 mycursor.execute(sql, val)
                 mydb.commit()
