@@ -18,6 +18,7 @@
                     <li><a href="settings.html">Settings</a></li>
                 </ul>
             </div>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         </div>
         <div class="content">
             <div class="title">
@@ -25,5 +26,10 @@
                 <div class="line"></div>
             </div>
         </div>
+        <script>
+            function toggleMenu() {
+                document.querySelector('.navitems').classList.toggle('open');
+            }
+        </script>
     </body>
 </html>

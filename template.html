@@ -18,6 +18,7 @@
                     <li><a href="settings.html">Settings</a></li>
                 </ul>
             </div>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         </div>
         <div class="content">
             <div class="title">
@@ -25,5 +26,47 @@
                 <div class="line"></div>
             </div>
         </div>
+        <style>
+            /* Hamburger button styling */
+            .menu-toggle {
+                display: none;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 2rem;
+                cursor: pointer;
+                margin-right: 1vw;
+                z-index: 101;
+            }
+
+            /* Show hamburger on small screens */
+            @media (max-width: 900px) {
+                .menu-toggle {
+                    display: block;
+                }
+                .navitems {
+                    display: none;
+                    flex-direction: column;
+                    width: 100vw;
+                    background: black;
+                    position: absolute;
+                    top: 56px;
+                    right: 0;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                    z-index: 100;
+                }
+                .navitems.open {
+                    display: flex;
+                }
+                .navitems ul {
+                    flex-direction: column;
+                    gap: 0.5em;
+                    align-items: flex-end;
+                    width: 100%;
+                    margin: 0;
+                    padding: 1em 2em;
+                }
+            }
+        </style>
     </body>
 </html>
