@@ -11,11 +11,10 @@
             </div>
             <div class="navitems">
                 <ul>
-                    <li><a href="index.html"><b>LiveWeather</b></a></li>
+                    <li><a href="index.html">LiveWeather</a></li>
                     <li><a href="10mtrend.html">10 Minute Trend</a></li>
                     <li><a href="1htrend.html">1 Hour Trend</a></li>
                     <li><a href="analysis.html">Analysis</a></li>
-                    <li><a href="settings.html">Settings</a></li>
                 </ul>
             </div>
         </div>
@@ -92,7 +91,7 @@
                 document.getElementById('wtemp-bar').style.height = `${Math.min(70, (wtemp/40)*70)}px`;
 
                 // Last Updated
-                document.getElementById('lastupdated').textContent = `${data.time} ${data.date}`;
+                document.getElementById('lastupdated').textContent = `${data.time}\u00B0 ${data.date}\u00B0`;
             }
         }
         updateWeather();
