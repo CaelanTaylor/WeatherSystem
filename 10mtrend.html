@@ -35,46 +35,85 @@
             <div>
                 <canvas id="gustChart" width="400" height="200"></canvas>
             </div>
+            <div>
+                <canvas id="dirChart" width="400" height="200"></canvas>
+            </div>
         </div>
         <script>
             function toggleMenu() {
                 document.querySelector('.navitems').classList.toggle('open');
             }
+
+            let avgWindChart, gustChart, dirChart;
+
             async function drawTrendGraphs() {
                 const res = await fetch('http://192.168.192.186:5001/trend10m');
                 const data = await res.json();
                 const labels = data.map(d => d.time.slice(-8));
                 const avgWind = data.map(d => d.avg_wind);
                 const maxGust = data.map(d => d.max_gust);
+                const avgDir = data.map(d => d.avg_dir);
 
-                new Chart(document.getElementById('avgWindChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Average Wind (knots)',
-                            data: avgWind,
-                            borderColor: 'blue',
-                            fill: false
-                        }]
-                    }
-                });
+                if (!avgWindChart) {
+                    avgWindChart = new Chart(document.getElementById('avgWindChart'), {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Average Wind (knots)',
+                                data: avgWind,
+                                borderColor: 'blue',
+                                fill: false
+                            }]
+                        }
+                    });
+                } else {
+                    avgWindChart.data.labels = labels;
+                    avgWindChart.data.datasets[0].data = avgWind;
+                    avgWindChart.update();
+                }
 
-                new Chart(document.getElementById('gustChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Highest Gust (knots)',
-                            data: maxGust,
-                            borderColor: 'red',
-                            fill: false
-                        }]
-                    }
-                });
+                if (!gustChart) {
+                    gustChart = new Chart(document.getElementById('gustChart'), {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Highest Gust (knots)',
+                                data: maxGust,
+                                borderColor: 'red',
+                                fill: false
+                            }]
+                        }
+                    });
+                } else {
+                    gustChart.data.labels = labels;
+                    gustChart.data.datasets[0].data = maxGust;
+                    gustChart.update();
+                }
+
+                if (!dirChart) {
+                    dirChart = new Chart(document.getElementById('dirChart'), {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Average Direction (°)',
+                                data: avgDir,
+                                borderColor: 'green',
+                                fill: false
+                            }]
+                        }
+                    });
+                } else {
+                    dirChart.data.labels = labels;
+                    dirChart.data.datasets[0].data = avgDir;
+                    dirChart.update();
+                }
             }
+
             drawTrendGraphs();
-            setInterval(drawTrendGraphs, 15000);
+            setInterval(drawTrendGraphs, 5000); // Auto update every 5 seconds
         </script>
     </body>
 </html>
