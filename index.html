@@ -51,10 +51,9 @@
                 </div>
             </div>
         </div>
-        <!-- Add this script to index.html -->
         <script>
         async function updateWeather() {
-            const res = await fetch('http://localhost:5001/latest');
+            const res = await fetch('http://192.168.192.186:5001/latest');
             const data = await res.json();
             if (!data.error) {
                 document.getElementById('windspeed').textContent = data.windspeed;
