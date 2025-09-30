@@ -4,8 +4,7 @@ import mysql.connector
 import ollama
 import socket
 
-#Set Variables
-
+# Set Variables
 location = "Test Location"
 
 global msg, message, windspd, winddir, wtemp, atemp, data
@@ -14,29 +13,28 @@ message = None
 msg = None  
 data = None
 
-#Set timing functions
+# Set timing functions
 
 def getdate():
     tm = time.localtime()
-    date = time.strftime("%d/%m/%Y", tm)
+    date = time.strftime("%Y-%m-%d", tm)  # MySQL DATE format
     return date
 
 def gettime():
     tm = time.localtime()
-    currtime = time.strftime("%H:%M:%S", tm)
+    currtime = time.strftime("%H:%M:%S", tm)  # MySQL TIME format
     return currtime
 
-#Set up database connection
+# Set up database connection
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="spring",
-  database="weatherdata"
+    host="localhost",
+    user="root",
+    password="spring",
+    database="weatherdata"
 )
 
 mycursor = mydb.cursor()
-
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     HOST = ''  # Listen on all interfaces
@@ -52,7 +50,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 data_list = data_str.split(',')
                 windspd, winddir, wtemp, atemp = map(float, data_list)
                 
-                # Get date and time
+                # Get date and time in MySQL format
                 date = getdate()
                 currtime = gettime()
 
