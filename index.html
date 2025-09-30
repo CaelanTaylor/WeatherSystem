@@ -95,7 +95,7 @@
                 const winddir = parseFloat(data.winddirection) || 0;
                 document.getElementById('winddirection').textContent = `${winddir.toFixed(0)}\u00B0`;
                 // Rotate wind arrow (triangle)
-                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir - 90} 50 50)`);
+                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir} 50 50)`);
                 // Wind Dir Label
                 const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
                 const dirIndex = Math.round(winddir / 45) % 8;
