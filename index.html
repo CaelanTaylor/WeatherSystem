@@ -12,7 +12,7 @@
             <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             <div class="navitems">
                 <ul>
-                    <li><a href="index.html"><b>LiveWeather</b></a></li>
+                    <li class="active"><a href="index.html">LiveWeather</a></li>
                     <li><a href="10mtrend.html">10 Minute Trend</a></li>
                     <li><a href="1htrend.html">1 Hour Trend</a></li>
                     <li><a href="analysis.html">Analysis</a></li>
@@ -35,8 +35,8 @@
                                 stroke-dasharray="251.2" stroke-dashoffset="251.2" style="transition:stroke-dashoffset 0.8s;"/>
                         </svg>
                         <div class="gauge-value" id="windspeed">--</div>
+                        <div class="unit">Knots</div>
                     </div>
-                    <div class="unit">Knots</div>
                 </div>
                 <div class="weather-item">
                     <div class="label">WIND DIRECTION</div>
@@ -46,8 +46,8 @@
                             <polygon id="wind-arrow" points="50,22 46,50 54,50" fill="#f00"/>
                         </svg>
                         <div class="gauge-value" id="winddirection">--°</div>
+                        <div class="unit" id="winddir-label"></div>
                     </div>
-                    <div class="unit" id="winddir-label">--</div>
                 </div>
                 <div class="updated">
                     Last Updated: <span id="lastupdated">--</span>
