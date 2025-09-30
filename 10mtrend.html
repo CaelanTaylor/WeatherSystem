@@ -46,6 +46,19 @@
 
             let avgWindChart, gustChart, dirChart;
 
+            const windOptions = {
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 40, // Set to your desired max wind speed in knots
+                        title: {
+                            display: true,
+                            text: 'Wind Speed (knots)'
+                        }
+                    }
+                }
+            };
+
             async function drawTrendGraphs() {
                 const res = await fetch('http://192.168.192.186:5001/trend10m');
                 const data = await res.json();
@@ -65,11 +78,13 @@
                                 borderColor: 'blue',
                                 fill: false
                             }]
-                        }
+                        },
+                        options: windOptions
                     });
                 } else {
                     avgWindChart.data.labels = labels;
                     avgWindChart.data.datasets[0].data = avgWind;
+                    avgWindChart.options = windOptions;
                     avgWindChart.update();
                 }
 
@@ -84,11 +99,13 @@
                                 borderColor: 'red',
                                 fill: false
                             }]
-                        }
+                        },
+                        options: windOptions
                     });
                 } else {
                     gustChart.data.labels = labels;
                     gustChart.data.datasets[0].data = maxGust;
+                    gustChart.options = windOptions;
                     gustChart.update();
                 }
 

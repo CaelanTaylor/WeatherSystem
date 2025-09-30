@@ -40,12 +40,12 @@ def trend10m():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    # Adjust table/column names as needed
     mycursor.execute("""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(time)/15)*15) AS interval_time,
             AVG(windspeed) AS avg_wind,
-            MAX(windspeed) AS max_gust
+            MAX(windspeed) AS max_gust,
+            AVG(winddirection) AS avg_dir
         FROM weatherdata
         WHERE time >= NOW() - INTERVAL 10 MINUTE
         GROUP BY interval_time
@@ -54,7 +54,7 @@ def trend10m():
     rows = mycursor.fetchall()
     mydb.close()
     return jsonify([
-        {"time": str(row[0]), "avg_wind": row[1], "max_gust": row[2]}
+        {"time": str(row[0]), "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
         for row in rows
     ])
 
