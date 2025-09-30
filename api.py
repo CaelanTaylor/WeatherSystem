@@ -14,9 +14,7 @@ def latest():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    mycursor.execute(
-        "SELECT date, time, location, windspeed, winddirection, wtemp, atemp FROM weatherdata ORDER BY date DESC, time DESC LIMIT 1"
-    )
+    mycursor.execute("SELECT date, time, location, windspeed, winddirection, wtemp, atemp FROM weatherdata ORDER BY id DESC LIMIT 1")
     row = mycursor.fetchone()
     mydb.close()
     if row:
