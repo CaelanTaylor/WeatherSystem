@@ -51,5 +51,21 @@
                 </div>
             </div>
         </div>
+        <!-- Add this script to index.html -->
+        <script>
+        async function updateWeather() {
+            const res = await fetch('http://localhost:5001/latest');
+            const data = await res.json();
+            if (!data.error) {
+                document.getElementById('windspeed').textContent = data.windspeed;
+                document.getElementById('winddirection').textContent = data.winddirection;
+                document.getElementById('wtemp').textContent = data.wtemp;
+                document.getElementById('atemp').textContent = data.atemp;
+                document.getElementById('lastupdated').textContent = `${data.time} ${data.date}`;
+            }
+        }
+        updateWeather();
+        setInterval(updateWeather, 5000); // Refresh every 5 seconds
+        </script>
     </body>
 </html>
