@@ -82,11 +82,14 @@
                 // Wind Speed
                 const windspeed = parseFloat(data.windspeed) || 0;
                 document.getElementById('windspeed').textContent = windspeed;
-                // Animate wind speed ring (max 60 knots for full circle)
-                const maxKnots = 60;
+                // Animate wind speed ring (max 40 knots for full circle)
+                const maxKnots = 40;
                 const percent = Math.min(windspeed / maxKnots, 1);
                 const offset = 251.2 * (1 - percent);
-                document.getElementById('windspeed-ring').setAttribute('stroke-dashoffset', offset);
+                const ring = document.getElementById('windspeed-ring');
+                ring.setAttribute('stroke-dashoffset', offset);
+                // Start from top (rotate -90 degrees)
+                ring.setAttribute('transform', 'rotate(-90 50 50)');
 
                 // Wind Direction
                 const winddir = parseFloat(data.winddirection) || 0;

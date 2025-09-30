@@ -196,14 +196,11 @@ body{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -55%);
-    font-size: 1.6rem;         /* Smaller font size */
+    font-size: 1.6rem;
     font-weight: bold;
     color: #222;
-    width: 48px;               /* Fixed width to fit inside circle */
     text-align: center;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .compass-gauge {
