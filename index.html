@@ -30,8 +30,9 @@
                     <div class="label">WIND SPEED</div>
                     <div class="circle-gauge">
                         <svg width="100" height="100">
-                            <circle cx="50" cy="50" r="40" stroke="#f00" stroke-width="6" fill="none"/>
-                            <circle cx="50" cy="50" r="40" stroke="#eee" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="0"/>
+                            <circle cx="50" cy="50" r="40" stroke="#eee" stroke-width="6" fill="none"/>
+                            <circle id="windspeed-ring" cx="50" cy="50" r="40" stroke="#f00" stroke-width="6" fill="none"
+                                stroke-dasharray="251.2" stroke-dashoffset="251.2" style="transition:stroke-dashoffset 0.8s;"/>
                         </svg>
                         <div class="gauge-value" id="windspeed">--</div>
                     </div>
@@ -44,9 +45,9 @@
                             <circle cx="50" cy="50" r="40" stroke="#000" stroke-width="6" fill="none"/>
                             <line id="wind-arrow" x1="50" y1="50" x2="50" y2="15" stroke="#f00" stroke-width="4"/>
                         </svg>
-                        <div class="gauge-value" id="winddirection">--</div>
+                        <div class="gauge-value" id="winddirection">--°</div>
                     </div>
-                    <div class="unit" id="winddir-label">North</div>
+                    <div class="unit" id="winddir-label">--</div>
                 </div>
                 <div class="weather-item">
                     <div class="label">AIR TEMP</div>
@@ -54,7 +55,7 @@
                         <div class="thermo-bar">
                             <div class="thermo-fill" id="atemp-bar"></div>
                         </div>
-                        <div class="gauge-value" id="atemp">--</div>
+                        <div class="gauge-value" id="atemp">--°</div>
                     </div>
                     <div class="unit">Celsius</div>
                 </div>
@@ -64,7 +65,7 @@
                         <div class="thermo-bar">
                             <div class="thermo-fill" id="wtemp-bar"></div>
                         </div>
-                        <div class="gauge-value" id="wtemp">--</div>
+                        <div class="gauge-value" id="wtemp">--°</div>
                     </div>
                     <div class="unit">Celsius</div>
                 </div>
@@ -79,24 +80,34 @@
             const data = await res.json();
             if (!data.error) {
                 // Wind Speed
-                document.getElementById('windspeed').textContent = data.windspeed;
+                const windspeed = parseFloat(data.windspeed) || 0;
+                document.getElementById('windspeed').textContent = windspeed;
+                // Animate wind speed ring (max 60 knots for full circle)
+                const maxKnots = 60;
+                const percent = Math.min(windspeed / maxKnots, 1);
+                const offset = 251.2 * (1 - percent);
+                document.getElementById('windspeed-ring').setAttribute('stroke-dashoffset', offset);
+
                 // Wind Direction
-                document.getElementById('winddirection').textContent = data.winddirection;
+                const winddir = parseFloat(data.winddirection) || 0;
+                document.getElementById('winddirection').textContent = `${winddir.toFixed(0)}°`;
                 // Rotate wind arrow
-                const arrow = document.getElementById('wind-arrow');
-                const angle = parseFloat(data.winddirection) || 0;
-                arrow.setAttribute('transform', `rotate(${angle} 50 50)`);
+                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir} 50 50)`);
                 // Wind Dir Label
                 const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
-                const dirIndex = Math.round(angle / 45) % 8;
+                const dirIndex = Math.round(winddir / 45) % 8;
                 document.getElementById('winddir-label').textContent = dirs[dirIndex];
+
                 // Air Temp
-                document.getElementById('atemp').textContent = data.atemp;
+                const atemp = parseFloat(data.atemp) || 0;
+                document.getElementById('atemp').textContent = `${atemp}°`;
+                document.getElementById('atemp-bar').style.height = `${Math.min(70, (atemp/40)*70)}px`;
+
                 // Water Temp
-                document.getElementById('wtemp').textContent = data.wtemp;
-                // Thermometer fill (scale 0-40°C)
-                document.getElementById('atemp-bar').style.height = `${Math.min(100, (data.atemp/40)*70)}px`;
-                document.getElementById('wtemp-bar').style.height = `${Math.min(100, (data.wtemp/40)*70)}px`;
+                const wtemp = parseFloat(data.wtemp) || 0;
+                document.getElementById('wtemp').textContent = `${wtemp}°`;
+                document.getElementById('wtemp-bar').style.height = `${Math.min(70, (wtemp/40)*70)}px`;
+
                 // Last Updated
                 document.getElementById('lastupdated').textContent = `${data.time} ${data.date}`;
             }
