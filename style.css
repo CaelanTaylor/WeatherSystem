@@ -101,8 +101,11 @@ body{
     padding: 2rem 2.5rem;
     text-align: center;
     min-width: 140px;
-    flex: 1 1 180px;
-    max-width: 220px;
+    flex: 1 1 220px;
+    max-width: 320px;
+    box-sizing: border-box;
+    margin: 0.5rem;
+    position: relative;
 }
 
 .dashboard {
@@ -113,6 +116,8 @@ body{
     gap: 2rem;
     margin-top: 3rem;
     font-family: 'outfit', Arial, sans-serif;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .weather-item .label {
@@ -132,6 +137,7 @@ body{
 .weather-item .unit {
     font-size: 1rem;
     color: #666;
+    margin-top: 0.5rem;
 }
 
 .updated {
@@ -185,13 +191,18 @@ body{
     }
 }
 
-.circle-gauge {
+.circle-gauge, .compass-gauge {
     position: relative;
     width: 100px;
     height: 100px;
     margin: 0 auto 0.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.circle-gauge .gauge-value {
+
+.circle-gauge .gauge-value,
+.compass-gauge .gauge-value {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -201,24 +212,9 @@ body{
     color: #222;
     text-align: center;
     white-space: nowrap;
-}
-
-.compass-gauge {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 0.5rem auto;
-}
-.compass-gauge .gauge-value {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -55%);
-    font-size: 1.7rem;
-    font-weight: bold;
-    color: #222;
-    width: 60px;
-    text-align: center;
+    width: auto;
+    max-width: 80px;
+    word-break: break-word;
 }
 
 .thermometer {
@@ -347,4 +343,59 @@ body{
     transform: translate(-50%, -50%);
     width: 60px;
     text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .dashboard {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .weather-item {
+        max-width: 95vw;
+        padding: 1.2rem 0.5rem;
+    }
+    .circle-gauge, .compass-gauge {
+        width: 70px;
+        height: 70px;
+    }
+    .circle-gauge .gauge-value,
+    .compass-gauge .gauge-value {
+        font-size: 1.2rem;
+        max-width: 60px;
+    }
+    .title h1 {
+        font-size: 2.2rem;
+    }
+    .title .line {
+        width: 90vw;
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard {
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .weather-item {
+        padding: 0.8rem 0.2rem;
+        min-width: 0;
+    }
+    .circle-gauge, .compass-gauge {
+        width: 50px;
+        height: 50px;
+    }
+    .circle-gauge .gauge-value,
+    .compass-gauge .gauge-value {
+        font-size: 1rem;
+        max-width: 40px;
+    }
+    .title h1 {
+        font-size: 1.3rem;
+    }
+    .title .line {
+        width: 80vw;
+    }
 }
