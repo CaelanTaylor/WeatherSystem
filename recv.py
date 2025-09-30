@@ -18,13 +18,16 @@ data = None
 
 def getdate():
     tm = time.localtime()
-    date = time.strftime("%d/%m/%Y", tm)
+    date = time.strftime("%Y-%m-%d", tm)  # MySQL DATE format
     return date
 
 def gettime():
     tm = time.localtime()
-    currtime = time.strftime("%H:%M:%S", tm)
+    currtime = time.strftime("%H:%M:%S", tm)  # MySQL TIME format
     return currtime
+
+def getdatetime():
+    return f"{getdate()} {gettime()}"
 
 #Set up database connection
 
@@ -59,7 +62,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 print(windspd, winddir, wtemp, atemp)
                 
                 # Prepare and execute SQL
-                sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                val = (date, currtime, location, windspd, winddir, wtemp, atemp)
+                sql = "INSERT INTO weatherdata (datetime, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s)"
+                val = (getdatetime(), location, windspd, winddir, wtemp, atemp)
                 mycursor.execute(sql, val)
                 mydb.commit()
