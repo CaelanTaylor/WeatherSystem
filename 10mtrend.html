@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>10 Minute Trend - WindScout</title>
+        <title>10 Minute Wind Trend</title>
         <link rel="stylesheet" href="style.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
         <div class="navbar">
@@ -26,10 +27,53 @@
                 <div class="line"></div>
             </div>
         </div>
+        <div class="dashboard">
+            <h2>10 Minute Wind Trend</h2>
+            <div>
+                <canvas id="avgWindChart" width="400" height="200"></canvas>
+            </div>
+            <div>
+                <canvas id="gustChart" width="400" height="200"></canvas>
+            </div>
+        </div>
         <script>
             function toggleMenu() {
                 document.querySelector('.navitems').classList.toggle('open');
             }
+            async function drawTrendGraphs() {
+                const res = await fetch('http://localhost:5001/trend10m');
+                const data = await res.json();
+                const labels = data.map(d => d.time.slice(-8));
+                const avgWind = data.map(d => d.avg_wind);
+                const maxGust = data.map(d => d.max_gust);
+
+                new Chart(document.getElementById('avgWindChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Average Wind (knots)',
+                            data: avgWind,
+                            borderColor: 'blue',
+                            fill: false
+                        }]
+                    }
+                });
+
+                new Chart(document.getElementById('gustChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Highest Gust (knots)',
+                            data: maxGust,
+                            borderColor: 'red',
+                            fill: false
+                        }]
+                    }
+                });
+            }
+            drawTrendGraphs();
         </script>
     </body>
 </html>
