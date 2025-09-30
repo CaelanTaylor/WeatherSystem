@@ -48,7 +48,7 @@ HOST = '192.168.192.186'
 PORT = 50000
 
 while True:
-    time.sleep(5)  # Wait for 5 seconds between readings
+    time.sleep(0.25)  # Wait for 5 seconds between readings
     data_list = [get_wind_speed(), get_wind_dir(), wtemp, atemp]
     data_str = ','.join(str(x) for x in data_list)
     try:
