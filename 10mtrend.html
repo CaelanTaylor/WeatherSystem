@@ -46,19 +46,6 @@
 
             let avgWindChart, gustChart, dirChart;
 
-            const windOptions = {
-                scales: {
-                    y: {
-                        min: 0,
-                        max: 40, // Set to your desired max wind speed in knots
-                        title: {
-                            display: true,
-                            text: 'Wind Speed (knots)'
-                        }
-                    }
-                }
-            };
-
             async function drawTrendGraphs() {
                 const res = await fetch('http://192.168.192.186:5001/trend10m');
                 const data = await res.json();
@@ -66,6 +53,31 @@
                 const avgWind = data.map(d => d.avg_wind);
                 const maxGust = data.map(d => d.max_gust);
                 const avgDir = data.map(d => d.avg_dir);
+
+                // Calculate dynamic min and max for wind charts
+                const allWind = avgWind.concat(maxGust);
+                let minWind = Math.min(...allWind);
+                let maxWind = Math.max(...allWind);
+
+                // Add padding for better visuals
+                minWind = Math.floor(minWind - 2);
+                maxWind = Math.ceil(maxWind + 2);
+
+                // Ensure min is not negative
+                if (minWind < 0) minWind = 0;
+
+                const windOptions = {
+                    scales: {
+                        y: {
+                            min: minWind,
+                            max: maxWind,
+                            title: {
+                                display: true,
+                                text: 'Wind Speed (knots)'
+                            }
+                        }
+                    }
+                };
 
                 if (!avgWindChart) {
                     avgWindChart = new Chart(document.getElementById('avgWindChart'), {
