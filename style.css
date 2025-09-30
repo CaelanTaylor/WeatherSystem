@@ -209,11 +209,14 @@ body{
 }
 .compass-gauge .gauge-value {
     position: absolute;
-    top: 60%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.2rem;
+    transform: translate(-50%, -55%);
+    font-size: 1.7rem;
+    font-weight: bold;
     color: #222;
+    width: 60px;
+    text-align: center;
 }
 
 .thermometer {
@@ -322,11 +325,14 @@ body{
 
 .compass-gauge .gauge-value {
     position: absolute;
-    top: 60%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.2rem;
+    transform: translate(-50%, -55%);
+    font-size: 1.7rem;
+    font-weight: bold;
     color: #222;
+    width: 60px;
+    text-align: center;
 }
 
 /* Compass Value */
