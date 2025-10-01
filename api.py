@@ -42,21 +42,23 @@ def trend10m():
     mycursor = mydb.cursor()
     mycursor.execute("""
         SELECT 
-            FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(time)/15)*15) AS interval_time,
-            AVG(windspeed) AS avg_wind,
-            MAX(windspeed) AS max_gust,
-            AVG(winddirection) AS avg_dir
+            date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE time >= NOW() - INTERVAL 10 MINUTE
-        GROUP BY interval_time
-        ORDER BY interval_time ASC
+        WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 10 MINUTE
+        GROUP BY date, time
+        ORDER BY time ASC
     """)
     rows = mycursor.fetchall()
     mydb.close()
-    return jsonify([
-        {"time": str(row[0]), "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
-        for row in rows
-    ])
+    data = []
+    for row in rows:
+        data.append({
+            "time": row[1].strftime("%H:%M:%S"),  # Format time for display
+            "avg_wind": row[2],
+            "max_gust": row[3],
+            "avg_dir": row[4]
+        })
+    return jsonify(data)
 
 @app.route('/trend1h')
 def trend1h():
@@ -69,21 +71,23 @@ def trend1h():
     mycursor = mydb.cursor()
     mycursor.execute("""
         SELECT 
-            FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(time)/60)*60) AS interval_time,
-            AVG(windspeed) AS avg_wind,
-            MAX(windspeed) AS max_gust,
-            AVG(winddirection) AS avg_dir
+            date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE time >= NOW() - INTERVAL 1 HOUR
-        GROUP BY interval_time
-        ORDER BY interval_time ASC
+        WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 1 HOUR
+        GROUP BY date, time
+        ORDER BY time ASC
     """)
     rows = mycursor.fetchall()
     mydb.close()
-    return jsonify([
-        {"time": str(row[0]), "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
-        for row in rows
-    ])
+    data = []
+    for row in rows:
+        data.append({
+            "time": row[1].strftime("%H:%M:%S"),  # Format time for display
+            "avg_wind": row[2],
+            "max_gust": row[3],
+            "avg_dir": row[4]
+        })
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
