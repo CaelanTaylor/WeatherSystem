@@ -19,8 +19,8 @@ def latest():
     mydb.close()
     if row:
         return jsonify({
-            "date": row[0],
-            "time": row[1],
+            "date": str(row[0]),  # Convert datetime to string
+            "time": str(row[1]),  # Convert datetime to string
             "location": row[2],
             "windspeed": row[3],
             "winddirection": row[4],
