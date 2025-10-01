@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 import mysql.connector
+import datetime
 
 app = Flask(__name__)
 CORS(app)  # <-- Add this line
@@ -18,7 +19,7 @@ def latest():
     row = mycursor.fetchone()
     mydb.close()
     if row:
-        return jsonify({
+        data = {
             "date": str(row[0]),  # Convert datetime to string
             "time": str(row[1]),  # Convert datetime to string
             "location": row[2],
@@ -26,7 +27,9 @@ def latest():
             "winddirection": row[4],
             "wtemp": row[5],
             "atemp": row[6]
-        })
+        }
+        print("Latest data:", data)  # Debugging statement
+        return jsonify(data)
     else:
         return jsonify({"error": "No data"}), 404
 
@@ -53,11 +56,12 @@ def trend10m():
     data = []
     for row in rows:
         data.append({
-            "time": row[1].strftime("%H:%M:%S"),  # Format time for display
+            "time": str(row[1]),  # Format time for display
             "avg_wind": row[2],
             "max_gust": row[3],
             "avg_dir": row[4]
         })
+    print("Trend 10m data:", data)  # Debugging statement
     return jsonify(data)
 
 @app.route('/trend1h')
@@ -82,11 +86,12 @@ def trend1h():
     data = []
     for row in rows:
         data.append({
-            "time": row[1].strftime("%H:%M:%S"),  # Format time for display
+            "time": str(row[1]),  # Format time for display
             "avg_wind": row[2],
             "max_gust": row[3],
             "avg_dir": row[4]
         })
+    print("Trend 1h data:", data)  # Debugging statement
     return jsonify(data)
 
 if __name__ == '__main__':
