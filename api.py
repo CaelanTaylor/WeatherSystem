@@ -60,8 +60,7 @@ def trend10m():
             "avg_wind": row[2],
             "max_gust": row[3],
             "avg_dir": row[4]
-        })
-    print("Trend 10m data:", data)  # Debugging statement
+        })  # Debugging statement
     return jsonify(data)
 
 @app.route('/trend1h')
@@ -90,8 +89,7 @@ def trend1h():
             "avg_wind": row[2],
             "max_gust": row[3],
             "avg_dir": row[4]
-        })
-    print("Trend 1h data:", data)  # Debugging statement
+        })  # Debugging statement
     return jsonify(data)
 
 if __name__ == '__main__':
