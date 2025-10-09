@@ -4,7 +4,16 @@ import mysql.connector
 import datetime
 
 app = Flask(__name__)
-CORS(app)  # <-- Add this line
+CORS(app)
+
+def generate_timestamps(interval_seconds, duration_minutes):
+    """Generates a list of timestamps at the specified interval for the given duration."""
+    now = datetime.datetime.now()
+    timestamps = []
+    for i in range(int(duration_minutes * 60 / interval_seconds)):
+        timestamp = now - datetime.timedelta(seconds=i * interval_seconds)
+        timestamps.append(timestamp.strftime('%Y-%m-%d %H:%M:%S'))
+    return timestamps
 
 @app.route('/latest')
 def latest():
@@ -43,24 +52,27 @@ def trend10m():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    mycursor.execute("""
-        SELECT 
-            date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+    timestamps = generate_timestamps(15, 10)
+    in_clause = ', '.join(['%s'] * len(timestamps))
+    query = f"""
+        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 10 MINUTE
+        WHERE date = CURDATE() AND time IN ({in_clause})
         GROUP BY date, time
         ORDER BY time ASC
-    """)
+    """
+    mycursor.execute(query, timestamps)
     rows = mycursor.fetchall()
     mydb.close()
     data = []
     for row in rows:
         data.append({
-            "time": str(row[1]),  # Format time for display
+            "time": str(row[1]),
             "avg_wind": row[2],
             "max_gust": row[3],
             "avg_dir": row[4]
-        })  # Debugging statement
+        })
+    print("Trend 10m data:", data)
     return jsonify(data)
 
 @app.route('/trend1h')
@@ -72,24 +84,27 @@ def trend1h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    mycursor.execute("""
-        SELECT 
-            date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+    timestamps = generate_timestamps(60, 60)
+    in_clause = ', '.join(['%s'] * len(timestamps))
+    query = f"""
+        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 1 HOUR
+        WHERE date = CURDATE() AND time IN ({in_clause})
         GROUP BY date, time
         ORDER BY time ASC
-    """)
+    """
+    mycursor.execute(query, timestamps)
     rows = mycursor.fetchall()
     mydb.close()
     data = []
     for row in rows:
         data.append({
-            "time": str(row[1]),  # Format time for display
+            "time": str(row[1]),
             "avg_wind": row[2],
             "max_gust": row[3],
             "avg_dir": row[4]
-        })  # Debugging statement
+        })
+    print("Trend 1h data:", data)
     return jsonify(data)
 
 if __name__ == '__main__':
