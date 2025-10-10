@@ -55,7 +55,7 @@ def generate_forecast(data):
         response = ollama.chat(
             model=ollama_model,
             messages=[
-                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nCreate a simple prediction for the morning, noon, afternoon, evening, night and early morning for each of the days. Ignore temperature. Units in knots and celsius. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
+                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nCreate a simple prediction for the rest of the day. Ignore temperature and do not make any temperature predictions. Units in knots and celsius. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
             ]
         )
 
