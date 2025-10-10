@@ -59,12 +59,15 @@ def generate_forecast(data):
             ]
         )
 
-        if 'response' in response:
-            return response['response']
-        elif 'error' in response:
-            return f"Error generating forecast: {response['error']}"
+        # Attempt to extract the forecast from the response
+        if isinstance(response, dict) and 'response' in response:
+            forecast = response['response']
+        elif isinstance(response, str):
+            forecast = response
         else:
-            return f"Error generating forecast: Unexpected response format from Ollama."
+            forecast = "Could not extract forecast from response."
+
+        return forecast
 
     except Exception as e:
         return f"Error generating forecast: {e}"
