@@ -58,7 +58,14 @@ def generate_forecast(data):
                 {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nCreate a simple forecast for the morning, noon, afternoon, evening, night and early morning for each of the days. Units in knots and celsius. Today is {datetime.date.today().strftime('%Y-%m-%d')}."}
             ]
         )
-        return response['response']
+
+        if 'response' in response:
+            return response['response']
+        elif 'error' in response:
+            return f"Error generating forecast: {response['error']}"
+        else:
+            return f"Error generating forecast: Unexpected response format from Ollama."
+
     except Exception as e:
         return f"Error generating forecast: {e}"
 
