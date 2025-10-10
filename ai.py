@@ -9,7 +9,7 @@ db_password = "spring"
 db_database = "weatherdata"
 
 # Ollama model to use
-ollama_model = "smollm2:360m"
+ollama_model = "qwen2.5:0.5b"
 
 def get_recent_weather_data(days=7):
     """Fetches recent weather data from the database."""
