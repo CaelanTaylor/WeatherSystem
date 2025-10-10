@@ -68,7 +68,7 @@ body{
     font-size:clamp(1rem, 2vw, 1.2rem);
     padding:0.3em 0.7em;
     border-radius:0.3em;
-    transition:background 0.2s;
+    transition: background 0.2s;
 }
 
 .navitems ul li a:hover{
@@ -420,61 +420,6 @@ body{
     transform: translate(-50%, -50%);
     width: 60px;
     text-align: center;
-}
-
-/* Responsive adjustments */
-@media (max-width: 900px) {
-    .dashboard {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-    .weather-item {
-        max-width: 95vw;
-        padding: 1.2rem 0.5rem;
-    }
-    .circle-gauge, .compass-gauge {
-        width: 70px;
-        height: 70px;
-    }
-    .circle-gauge .gauge-value,
-    .compass-gauge .gauge-value {
-        font-size: 1.2rem;
-        max-width: 60px;
-    }
-    .title h1 {
-        font-size: 2.2rem;
-    }
-    .title .line {
-        width: 90vw;
-    }
-}
-
-@media (max-width: 600px) {
-    .dashboard {
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-    .weather-item {
-        padding: 0.8rem 0.2rem;
-        min-width: 0;
-    }
-    .circle-gauge, .compass-gauge {
-        width: 50px;
-        height: 50px;
-    }
-    .circle-gauge .gauge-value,
-    .compass-gauge .gauge-value {
-        font-size: 1rem;
-        max-width: 40px;
-    }
-    .title h1 {
-        font-size: 1.3rem;
-    }
-    .title .line {
-        width: 80vw;
-    }
 }
 
 #wind-arrow {
