@@ -1,4 +1,3 @@
-from sx126x import sx126x
 import time
 import threading
 import mysql.connector
@@ -32,16 +31,6 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-
-SERIAL_PORT = "/dev/ttyS0"
-
-lora = sx126x(
-    serial_num="/dev/ttyS0",
-    freq=433,
-    addr=0x0022,
-    power=22,
-    rssi=True
-)
 
 msg_queue = queue.Queue()
 
