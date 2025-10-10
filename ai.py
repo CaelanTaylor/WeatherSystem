@@ -61,11 +61,8 @@ def generate_forecast(data):
 
         print("Raw response from Ollama:", response)  # Print the raw response
 
-        # Attempt to extract the forecast from the response
-        if isinstance(response, dict) and 'response' in response:
-            forecast = response['response']
-        elif isinstance(response, str):
-            forecast = response
+        if isinstance(response, dict) and 'message' in response and 'content' in response['message']:
+            forecast = response['message']['content']
         else:
             forecast = "Could not extract forecast from response."
 
