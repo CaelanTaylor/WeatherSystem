@@ -1,13 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 import mysql.connector
 import datetime
-from config import load_config, save_config
 
 app = Flask(__name__)
 CORS(app)
-
-location, db_enabled = load_config()
 
 def generate_timestamps(interval_seconds, duration_minutes):
     """Generates a list of timestamps at the specified interval for the given duration."""
@@ -55,17 +52,16 @@ def trend10m():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    location = "YourSpecificLocation"  # Replace with the actual location
     timestamps = generate_timestamps(15, 10)
     in_clause = ', '.join(['%s'] * len(timestamps))
     query = f"""
         SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause}) AND location = %s
+        WHERE date = CURDATE() AND time IN ({in_clause})
         GROUP BY date, time
         ORDER BY time ASC
     """
-    mycursor.execute(query, (location,) + timestamps)  # Pass location as a parameter
+    mycursor.execute(query, timestamps)
     rows = mycursor.fetchall()
     mydb.close()
     data = []
@@ -88,17 +84,16 @@ def trend1h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    location = "Test Location"  # Replace with the actual location
     timestamps = generate_timestamps(60, 60)
     in_clause = ', '.join(['%s'] * len(timestamps))
     query = f"""
         SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause}) AND location = %s
+        WHERE date = CURDATE() AND time IN ({in_clause})
         GROUP BY date, time
         ORDER BY time ASC
     """
-    mycursor.execute(query, (location,) + timestamps)  # Pass location as a parameter
+    mycursor.execute(query, timestamps)
     rows = mycursor.fetchall()
     mydb.close()
     data = []
@@ -111,14 +106,6 @@ def trend1h():
         })
     print("Trend 1h data:", data)
     return jsonify(data)
-
-@app.route('/save_settings', methods=['POST'])
-def save_settings():
-    data = request.get_json()
-    new_location = data['location']
-    new_db_enabled = data['dbEnabled']
-    save_config(new_location, new_db_enabled)
-    return jsonify({'message': 'Settings saved successfully'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

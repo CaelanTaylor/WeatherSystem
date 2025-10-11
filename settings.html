@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Configuration Settings</title>
+        <title>Settings - WindScout</title>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
@@ -21,47 +21,9 @@
         </div>
         <div class="content">
             <div class="title">
-                <h1>Configuration Settings</h1>
+                <h1>Settings</h1>
                 <div class="line"></div>
             </div>
-            <form id="configForm">
-                <label for="location">Location:</label>
-                <input type="text" id="location" name="location" value="Test Location"><br><br>
-
-                <label for="dbEnabled">Enable Database:</label>
-                <input type="checkbox" id="dbEnabled" name="dbEnabled" checked><br><br>
-
-                <button type="button" onclick="saveSettings()">Save Settings</button>
-            </form>
         </div>
-        <script>
-            function saveSettings() {
-                const location = document.getElementById('location').value;
-                const dbEnabled = document.getElementById('dbEnabled').checked;
-
-                // Send settings to server (replace with your actual server-side endpoint)
-                fetch('/save_settings', {  // Assuming you have a /save_settings endpoint
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        location: location,
-                        dbEnabled: dbEnabled
-                    })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Settings saved successfully!');
-                    } else {
-                        alert('Error saving settings.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error saving settings.');
-                });
-            }
-        </script>
     </body>
 </html>
