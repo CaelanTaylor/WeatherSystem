@@ -15,7 +15,7 @@ def generate_timestamps(interval_seconds, duration_minutes):
     timestamps = []
     for i in range(int(duration_minutes * 60 / interval_seconds)):
         timestamp = now - datetime.timedelta(seconds=i * interval_seconds)
-        timestamps.append(timestamp.strftime('%d/%m/%Y %H:%M:%S'))
+        timestamps.append(timestamp.strftime('%Y-%m-%d %H:%M:%S'))
     return timestamps
 
 @app.route('/latest')
@@ -55,7 +55,7 @@ def trend10m():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    location = "Test Location"  # Replace with the actual location
+    location = "YourSpecificLocation"  # Replace with the actual location
     timestamps = generate_timestamps(15, 10)
     in_clause = ', '.join(['%s'] * len(timestamps))
     query = f"""
