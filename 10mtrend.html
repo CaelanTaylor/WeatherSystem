@@ -1,77 +1,84 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>10 Minute Wind Trend</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
-    <body>
-        <div class="navbar">
-            <div class="logo">
-                <h1>WindScout</h1>
-            </div>
-            <div class="navitems">
-                <ul>
-                    <li><a href="index.html">LiveWeather</a></li>
-                    <li><a href="10mtrend.html"><b>10 Minute Trend</b></a></li>
-                    <li><a href="1htrend.html">1 Hour Trend</a></li>
-                    <li><a href="analysis.html">Analysis</a></li>
-                    <li><a href="settings.html">Settings</a></li>
-                </ul>
-            </div>
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>10 Minute Wind Trend</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <h1>WindScout</h1>
         </div>
-        <div class="content">
-            <div class="title">
-                <h1>10 Minute Trend</h1>
-                <div class="line"></div>
-            </div>
+        <div class="navitems">
+            <ul>
+                <li><a href="index.html">LiveWeather</a></li>
+                <li><a href="10mtrend.html">10 Minute Trend</a></li>
+                <li><a href="1htrend.html">1 Hour Trend</a></li>
+                <li><a href="analysis.html">Analysis</a></li>
+                <li><a href="settings.html">Settings</a></li>
+            </ul>
         </div>
-        <br>
-        <br>
-        <div class="dashboard">
-            <div>
-                <canvas id="avgWindChart" width="400" height="200"></canvas>
-            </div>
-            <div>
-                <canvas id="gustChart" width="400" height="200"></canvas>
-            </div>
-            <div>
-                <canvas id="dirChart" width="400" height="200"></canvas>
-            </div>
-        </div>
-        <script>
-            function toggleMenu() {
-                document.querySelector('.navitems').classList.toggle('open');
-            }
+    </div>
 
-            let avgWindChart, gustChart, dirChart;
+    <div class="content">
+        <div class="title">
+            <h1>10 Minute Trend</h1>
+            <div class="line"></div>
+        </div>
+    </div>
 
-            async function drawTrendGraphs() {
-                const res = await fetch('http://192.168.192.186:5001/trend10m');
-                const data = await res.json();
+    <div class="dashboard">
+        <div id="avgWindChartContainer" style="width:400px;height:200px">
+            <canvas id="avgWindChart"></canvas>
+        </div>
+        <div id="gustChartContainer" style="width:400px;height:200px">
+            <canvas id="gustChart"></canvas>
+        </div>
+        <div id="dirChartContainer" style="width:400px;height:200px">
+            <canvas id="dirChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.querySelector('.navitems').classList.toggle('open');
+        }
+
+        let avgWindChart, gustChart, dirChart;
+
+        async function drawTrendGraphs() {
+            try {
+                const apiUrl = 'http://192.168.192.186:5001/trend10m'; // Or /trend1h
+                console.log('Fetching data from:', apiUrl); // Debug: Check URL
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Data received:', data); // Debug: Inspect data format
+
+                if (!data || data.length === 0) {
+                    console.warn('No data received from API.');
+                    return; // Exit if no data
+                }
+
                 const labels = data.map(d => d.time.slice(-8));
                 const avgWind = data.map(d => d.avg_wind);
                 const maxGust = data.map(d => d.max_gust);
                 const avgDir = data.map(d => d.avg_dir);
 
-                // Calculate dynamic min and max for wind charts
-                const allWind = avgWind.concat(maxGust);
-                let minWind = Math.min(...allWind);
-                let maxWind = Math.max(...allWind);
-
-                // Add padding for better visuals
-                minWind = Math.floor(minWind - 2);
-                maxWind = Math.ceil(maxWind + 2);
-
-                // Ensure min is not negative
-                if (minWind < 0) minWind = 0;
+                const minWind = Math.min(...avgWind.concat(maxGust));
+                const maxWind = Math.max(...avgWind.concat(maxGust));
 
                 const windOptions = {
                     scales: {
                         y: {
-                            min: minWind,
-                            max: maxWind,
+                            min: minWind - 2,
+                            max: maxWind + 2,
                             title: {
                                 display: true,
                                 text: 'Wind Speed (knots)'
@@ -140,10 +147,13 @@
                     dirChart.data.datasets[0].data = avgDir;
                     dirChart.update();
                 }
-            }
 
-            drawTrendGraphs();
-            setInterval(drawTrendGraphs, 5000); // Auto update every 5 seconds
-        </script>
-    </body>
+            } catch (error) {
+                console.error('Error fetching or rendering graphs:', error);
+            }
+        }
+
+        drawTrendGraphs();
+    </script>
+</body>
 </html>
