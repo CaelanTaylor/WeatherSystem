@@ -174,5 +174,37 @@ def generate_forecast():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/trend24h')
+def trend24h():
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="spring",
+        database="weatherdata"
+    )
+    mycursor = mydb.cursor()
+    timestamps = generate_timestamps(60*60, 24)
+    in_clause = ', '.join(['%s'] * len(timestamps))
+    query = f"""
+        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+        FROM weatherdata
+        WHERE date = CURDATE() AND time IN ({in_clause})
+        GROUP BY date, time
+        ORDER BY time ASC
+    """
+    mycursor.execute(query, timestamps)
+    rows = mycursor.fetchall()
+    mydb.close()
+    data = []
+    for row in rows:
+        data.append({
+            "time": str(row[1]),
+            "avg_wind": row[2],
+            "max_gust": row[3],
+            "avg_dir": row[4]
+        })
+    print("Trend 24h data:", data)
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
