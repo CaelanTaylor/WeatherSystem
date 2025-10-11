@@ -18,7 +18,6 @@
                     <li><a href="settings.html"><b>Settings</b></a></li>
                 </ul>
             </div>
-             <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         </div>
         <div class="content">
             <div class="title">
@@ -27,49 +26,21 @@
             </div>
             <form id="configForm">
                 <label for="location">Location:</label>
-                <input type="text" id="location" name="location" value=""><br><br>
+                <input type="text" id="location" name="location" value="Test Location"><br><br>
 
                 <label for="dbEnabled">Enable Database:</label>
-                <input type="checkbox" id="dbEnabled" name="dbEnabled"><br><br>
+                <input type="checkbox" id="dbEnabled" name="dbEnabled" checked><br><br>
 
                 <button type="button" onclick="saveSettings()">Save Settings</button>
-                <div id="statusMessage" style="margin-top: 10px; font-weight: bold;"></div>
             </form>
         </div>
         <script>
-            // Function to load current settings from the server
-            async function loadSettings() {
-                try {
-                    // Uses the new /get_settings endpoint
-                    const response = await fetch('/get_settings'); 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    
-                    // Populate form fields
-                    document.getElementById('location').value = data.location;
-                    document.getElementById('dbEnabled').checked = data.dbEnabled;
-                    document.getElementById('statusMessage').textContent = `Current location loaded: ${data.location}`;
-                    document.getElementById('statusMessage').style.color = 'gray';
-
-                } catch (error) {
-                    console.error("Error loading settings:", error);
-                    document.getElementById('statusMessage').textContent = "Error loading current settings.";
-                    document.getElementById('statusMessage').style.color = 'red';
-                }
-            }
-
             function saveSettings() {
                 const location = document.getElementById('location').value;
                 const dbEnabled = document.getElementById('dbEnabled').checked;
-                const statusMessage = document.getElementById('statusMessage');
 
-                statusMessage.textContent = 'Saving...';
-                statusMessage.style.color = 'orange';
-
-                // Send settings to server
-                fetch('/save_settings', {
+                // Send settings to server (replace with your actual server-side endpoint)
+                fetch('/save_settings', {  // Assuming you have a /save_settings endpoint
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -81,26 +52,16 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        statusMessage.textContent = `Settings saved successfully! Current location: ${location}`;
-                        statusMessage.style.color = 'green';
+                        alert('Settings saved successfully!');
                     } else {
-                        statusMessage.textContent = 'Error saving settings.';
-                        statusMessage.style.color = 'red';
+                        alert('Error saving settings.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    statusMessage.textContent = 'Network error while saving settings.';
-                    statusMessage.style.color = 'red';
+                    alert('Error saving settings.');
                 });
             }
-
-            function toggleMenu() {
-                document.querySelector('.navitems').classList.toggle('open');
-            }
-            
-            // Load settings when the page loads
-            window.onload = loadSettings;
         </script>
     </body>
 </html>
