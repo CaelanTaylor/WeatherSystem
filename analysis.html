@@ -1,31 +1,40 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Weather Analysis - WindScout</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <div class="navbar">
-            <div class="logo">
-                <h1>WindScout</h1>
-            </div>
-            <div class="navitems">
-                <ul>
-                    <li><a href="index.html">LiveWeather</a></li>
-                    <li><a href="10mtrend.html">10 Minute Trend</a></li>
-                    <li><a href="1htrend.html">1 Hour Trend</a></li>
-                    <li><a href="analysis.html"><b>Analysis</b></a></li>
-                    <li><a href="settings.html">Settings</a></li>
-                </ul>
-            </div>
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Analysis - WindScout</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <h1>WindScout</h1>
         </div>
-        <div class="content">
-            <div class="title">
-                <h1>Weather Analysis</h1>
-                <div class="line"></div>
-            </div>
+        <div class="navitems">
+            <ul>
+                <li><a href="index.html">LiveWeather</a></li>
+                <li><a href="10mtrend.html">10 Minute Trend</a></li>
+                <li><a href="1htrend.html">1 Hour Trend</a></li>
+                <li><a href="analysis.html"><b >Analysis</b></a></li>
+                <li><a href="settings.html">Settings</a></li>
+            </ul>
         </div>
-    </body>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    </div>
+    <div class="content">
+        <div class="title">
+            <h1>Weather Analysis</h1>
+            <div class="line"></div>
+        </div>
+        <div id="forecast-display">
+            <!-- Forecast will be displayed here -->
+        </div>
+    </div>
+    <script>
+        // Function to update the forecast display
+        function updateForecast(forecast) {
+            document.getElementById('forecast-display').innerHTML = '<p>' + forecast + '</p>';
+        }
+    </script>
+</body>
 </html>

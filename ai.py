@@ -1,6 +1,7 @@
 import ollama
 import mysql.connector
 import datetime
+import threading
 
 # Database connection details
 db_host = "localhost"
@@ -40,10 +41,11 @@ def get_recent_weather_data(days=7):
         print(f"Error fetching data: {e}")
         return None
 
-def generate_forecast(data):
+def generate_forecast(data, callback_function):
     """Generates a weather forecast using the provided data."""
     if not data:
-        return "No data available to generate a forecast."
+        callback_function("No data available to generate a forecast.")
+        return
 
     # Format the data into a string for the prompt
     data_string = "\n".join([
@@ -55,7 +57,7 @@ def generate_forecast(data):
         response = ollama.chat(
             model=ollama_model,
             messages=[
-                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nCreate a simple wind prediction for the rest of the day just using the data from the database. Ignore temperature and do not make any temperature predictions. Units in knots and celsius. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
+                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
             ]
         )
 
@@ -66,15 +68,23 @@ def generate_forecast(data):
         else:
             forecast = "Could not extract forecast from response."
 
-        return forecast
+        callback_function(forecast)
 
     except Exception as e:
-        return f"Error generating forecast: {e}"
+        callback_function(f"Error generating forecast: {e}")
 
-if __name__ == "__main__":
+def callback_function(forecast):
+    """Callback function to display the forecast."""
+    print(f"Forecast: {forecast}")
+
+def main():
     weather_data = get_recent_weather_data(days=7)
     if weather_data:
-        forecast = generate_forecast(weather_data)
-        print(forecast)
+        # Start the forecast generation in a separate thread
+        thread = threading.Thread(target=generate_forecast, args=(weather_data, callback_function))
+        thread.start()
     else:
         print("Failed to retrieve weather data.")
+
+if __name__ == "__main__":
+    main()
