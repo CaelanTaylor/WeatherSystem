@@ -34,14 +34,14 @@
     <script>
         function updateForecast() {
             // Fetch recent weather data
-            fetch('http://192.168.192.186:5000/get_recent_weather_data') // Replace with your API endpoint
+            fetch('http://192.168.192.186:5001/get_recent_weather_data') // Replace with your API endpoint
                 .then(response => response.json())
                 .then(data => {
                     // Start the forecast generation in a separate thread
                     if (data && data.length > 0) {
                         // Start the forecast generation in a separate thread
                         window.ai_thread = window.ai_thread || new Promise((resolve, reject) => {
-                            fetch('http://192.168.192.186:5000/generate_forecast', { // Replace with your API endpoint
+                            fetch('http://192.168.192.186:5001/generate_forecast', { // Replace with your API endpoint
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
