@@ -8,130 +8,119 @@
     <script>
         async function updateWeather() {
             try {
-                const response = await fetch('http://192.168.192.186:5001/latest'); // Fetch from Python server
+                // Ensure the URL is correct for your api.py server
+                const response = await fetch('http://192.168.192.186:5001/latest'); 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
 
                 // Update HTML elements
-                document.getElementById('windspeed').textContent = data.windspeed.toFixed(2); // Format to 2 decimal places
-                document.getElementById('winddirection').textContent = `${data.winddirection}°`;
-                document.getElementById('winddir-label').textContent = getWindDirectionLabel(data.winddirection);
+                document.getElementById('windspeed').textContent = data.windspeed.toFixed(2);
+                
+                // MODIFICATION: Display the location from the data
+                document.getElementById('current-location').textContent = `Location: ${data.location}`; 
+                
+                // Temperature
+                document.getElementById('wtemp').textContent = data.wtemp.toFixed(1);
+                document.getElementById('atemp').textContent = data.atemp.toFixed(1);
+
+                // Wind Speed Ring (assuming max wind is 40 for 100% fill)
+                const max_wind = 40; 
+                const percentage = Math.min(data.windspeed / max_wind, 1);
+                const circumference = 314.16; // 2 * pi * 50 (r=50 for the ring)
+                const offset = circumference * (1 - percentage);
+                const ring = document.getElementById('windspeed-ring');
+                ring.setAttribute('stroke-dashoffset', offset);
+                ring.setAttribute('transform', 'rotate(-90 50 50)');
+
+                // Wind Direction
+                const winddir = parseFloat(data.winddirection) || 0;
+                document.getElementById('winddirection').textContent = `${winddir.toFixed(0)}\u00B0`;
+                // Smoothly rotate wind arrow (triangle)
+                document.getElementById('wind-arrow').style.transition = "transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)";
+                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir} 50 50)`);
+                // Wind Dir Label
+                const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
+                const dirIndex = Math.round(winddir / 45) % 8;
+                document.getElementById('winddir-label').textContent = dirs[dirIndex];
+
+                // Last Updated
                 document.getElementById('lastupdated').textContent = `${data.time} ${data.date}`;
 
             } catch (error) {
                 console.error("Error fetching data:", error);
                 document.getElementById('lastupdated').textContent = "Error loading data";
+                document.getElementById('current-location').textContent = "Location: (No Data)";
             }
         }
-
-        function getWindDirectionLabel(direction) {
-            const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-            const index = Math.round((direction / 45) % 8);
-            return directions[index];
+        
+        function toggleMenu() {
+            document.querySelector('.navitems').classList.toggle('open');
         }
 
-        // Initial update and then update every 5 seconds
         updateWeather();
-        setInterval(updateWeather, 5000);
+        setInterval(updateWeather, 1000); // Auto update every 1 second
     </script>
 </head>
 <body>
     <div class="navbar">
         <div class="logo">
-            <h1 >WindScout</h1>
+            <h1>WindScout</h1>
         </div>
         <div class="navitems">
-            <ul >
-                <li ><a href="index.html">LiveWeather</a></li>
-                <li ><a href="10mtrend.html">10 Minute Trend</a></li>
-                <li ><a href="1htrend.html">1 Hour Trend</a></li>
-                <li ><a href="analysis.html">Analysis</a></li>
-                <li ><a href="settings.html">Settings</a></li>
+            <ul>
+                <li><a href="index.html"><b>LiveWeather</b></a></li>
+                <li><a href="10mtrend.html">10 Minute Trend</a></li>
+                <li><a href="1htrend.html">1 Hour Trend</a></li>
+                <li><a href="analysis.html">Analysis</a></li>
+                <li><a href="settings.html">Settings</a></li>
             </ul>
         </div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     </div>
+    
     <div class="content">
         <div class="title">
-            <h1>LiveWeather</h1>
+            <h1>Live Weather</h1>
             <div class="line"></div>
+            <p id="current-location" style="font-size: 1.2em; margin-top: 10px;"></p>
         </div>
+        
         <div class="dashboard">
-            <div class="weather-item">
-                <div class="label">WIND SPEED</div>
-                <div class="circle-gauge">
-                    <svg width="100" height="100">
-                        <circle cx="50" cy="50" r="40" stroke="#eee" stroke-width="6" fill="none"/>
-                        <circle id="windspeed-ring" cx="50" cy="50" r="40" stroke="#f00" stroke-width="6" fill="none"
-                            stroke-dasharray="251.2" stroke-dashoffset="251.2" style="transition:stroke-dashoffset 0.8s;"/>
+            <div class="indicator-card">
+                <h2>Wind Speed (knots)</h2>
+                <div class="speed-ring-container">
+                    <svg class="speed-ring" viewBox="0 0 100 100">
+                        <circle class="speed-ring-bg" cx="50" cy="50" r="45"></circle>
+                        <circle class="speed-ring-fill" id="windspeed-ring" cx="50" cy="50" r="45"></circle>
+                        <g class="arrow-container" id="wind-arrow" transform="rotate(0 50 50)">
+                            <polygon points="50,5 45,15 55,15" class="wind-arrow-head"/>
+                        </g>
                     </svg>
-                    <div class="gauge-value" id="windspeed">--</div>
+                    <span id="windspeed" class="speed-value">0.00</span>
                 </div>
-                <div class="unit">Knots</div>
+                <p class="last-updated">Last Updated: <span id="lastupdated">--:--:--</span></p>
             </div>
-            <div class="weather-item">
-                <div class="label">WIND DIRECTION</div>
-                <div class="compass-gauge">
-                    <svg width="100" height="100">
-                        <circle cx="50" cy="50" r="40" stroke="#000" stroke-width="6" fill="none"/>
-                        <polygon id="wind-arrow" points="50,22 46,50 54,50" fill="#f00"/>
-                    </svg>
-                    <div class="gauge-value" id="winddirection">--°</div>
+
+            <div class="indicator-card">
+                <h2>Wind Direction</h2>
+                <div class="dir-display">
+                    <span id="winddirection" class="dir-value">0°</span>
+                    <p id="winddir-label" class="dir-label">North</p>
                 </div>
-                <div class="unit" id="winddir-label">--</div>
             </div>
-            <div class="updated">
-                Last Updated: <span id="lastupdated">--</span>
+
+            <div class="indicator-card">
+                <h2>Water Temp (°C)</h2>
+                <p id="wtemp" class="temp-value">--</p>
+            </div>
+
+            <div class="indicator-card">
+                <h2>Air Temp (°C)</h2>
+                <p id="atemp" class="temp-value">--</p>
             </div>
         </div>
     </div>
-    <script>
-    async function updateWeather() {
-        try {
-            const res = await fetch('http://192.168.192.186:5001/latest');
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-            const data = await res.json();
-
-            // Wind Speed
-            const windspeed = parseFloat(data.windspeed) || 0;
-            document.getElementById('windspeed').textContent = windspeed;
-            // Animate wind speed ring (max 40 knots for full circle)
-            const maxKnots = 40;
-            const percent = Math.min(windspeed / maxKnots, 1);
-            const offset = 251.2 * (1 - percent);
-            const ring = document.getElementById('windspeed-ring');
-            ring.setAttribute('stroke-dashoffset', offset);
-            ring.setAttribute('transform', 'rotate(-90 50 50)');
-
-            // Wind Direction
-            const winddir = parseFloat(data.winddirection) || 0;
-            document.getElementById('winddirection').textContent = `${winddir.toFixed(0)}\u00B0`;
-            // Smoothly rotate wind arrow (triangle)
-            document.getElementById('wind-arrow').style.transition = "transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)";
-            document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir} 50 50)`);
-            // Wind Dir Label
-            const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
-            const dirIndex = Math.round(winddir / 45) % 8;
-            document.getElementById('winddir-label').textContent = dirs[dirIndex];
-
-            // Last Updated
-            document.getElementById('lastupdated').textContent = `${data.time} ${data.date}`;
-
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            // Optionally display an error message on the page
-            document.getElementById('lastupdated').textContent = "Error loading data";
-        }
-    }
-    updateWeather();
-    setInterval(updateWeather, 1000);
-
-    function toggleMenu() {
-        document.querySelector('.navitems').classList.toggle('open');
-    }
-    </script>
 </body>
 </html>
