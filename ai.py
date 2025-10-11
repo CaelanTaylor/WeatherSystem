@@ -80,7 +80,6 @@ def callback_function(forecast):
 def main():
     weather_data = get_recent_weather_data(days=7)
     if weather_data:
-        # Start the forecast generation in a separate thread
         thread = threading.Thread(target=generate_forecast, args=(weather_data, callback_function))
         thread.start()
     else:

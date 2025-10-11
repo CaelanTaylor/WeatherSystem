@@ -8,7 +8,7 @@
 <body>
     <div class="navbar">
         <div class="logo">
-            <h1>WindScout</h1>
+            <h1 >WindScout</h1>
         </div>
         <div class="navitems">
             <ul>
@@ -19,23 +19,55 @@
                 <li><a href="settings.html">Settings</a></li>
             </ul>
         </div>
-        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <button class="menu-toggle" onclick="updateForecast()">Update Forecast</button>
     </div>
     <div class="content">
         <div class="title">
-            <h1>Weather Analysis</h1>
-            <div class="line"></div>
+            <h1 >Weather Analysis</h1 >
+            <div class="line"></div >
         </div>
         <div id="forecast-display">
-            <h2>Forecast Section</h2>
-            <p>This section will display weather forecasts and analysis based on recent data.</p>
-            <button onclick="updateForecast('New forecast data received!')">Update Forecast</button>
+            <h2 >Forecast Section</h2>
+            <p >This section will display weather forecasts and analysis based on recent data.</p>
         </div>
     </div>
     <script>
-        // Function to update the forecast display
-        function updateForecast(forecast) {
-            document.getElementById('forecast-display').innerHTML = '<p>' + forecast + '</p>';
+        function updateForecast() {
+            // Fetch recent weather data
+            fetch('http://192.168.192.186:5000/get_recent_weather_data') // Replace with your API endpoint
+                .then(response => response.json())
+                .then(data => {
+                    // Start the forecast generation in a separate thread
+                    if (data && data.length > 0) {
+                        // Start the forecast generation in a separate thread
+                        window.ai_thread = window.ai_thread || new Promise((resolve, reject) => {
+                            fetch('http://192.168.192.186:5000/generate_forecast', { // Replace with your API endpoint
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ weather_data: data })
+                            })
+                            .then(response => response.text())
+                            .then(forecast => {
+                                document.getElementById('forecast-display').innerHTML = `<p>${forecast}</p>`;
+                                resolve();
+                            })
+                            .catch(error => {
+                                console.error('Error generating forecast:', error);
+                                document.getElementById('forecast-display').innerHTML = `<p>Error generating forecast.</p>`;
+                                reject(error);
+                            });
+                        });
+                    } else {
+                        document.getElementById('forecast-display').innerHTML = `<p>No data available.</p>`;
+                    }
+                }
+            )
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                document.getElementById('forecast-display').innerHTML = `<p>Error fetching data.</p>`;
+            });
         }
     </script>
 </body>
