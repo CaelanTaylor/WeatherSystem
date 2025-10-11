@@ -6,7 +6,7 @@
     <title>LiveWeather - WindScout</title>
     <link rel="stylesheet" href="style.css">
     <script>
-        function updateWeather() {
+        async function updateWeather() {
             try {
                 const response = await fetch('http://192.168.192.186:5001/latest'); // Fetch from Python server
                 if (!response.ok) {
