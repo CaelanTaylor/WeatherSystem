@@ -183,26 +183,41 @@ def trend24h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    timestamps = generate_timestamps(60*60, 24)
-    in_clause = ', '.join(['%s'] * len(timestamps))
-    query = f"""
-        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+    # Generate timestamps for the last 24 hours
+    now = datetime.datetime.now()
+    timestamps = []
+    for i in range(24):
+        timestamp = now - datetime.timedelta(hours=i)
+        timestamps.append(timestamp.strftime('%Y-%m-%d %H:%M:%S'))
+
+    # Query to calculate the average wind speed, max gust, and average direction for each hour
+    query = """
+        SELECT 
+            STR_TO_DATE(time, '%Y-%m-%d %H:%M:%S') AS time,
+            AVG(windspeed) AS avg_wind,
+            MAX(windspeed) AS max_gust,
+            AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause})
-        GROUP BY date, time
+        WHERE time >= %s AND time < %s
+        GROUP BY time
         ORDER BY time ASC
     """
-    mycursor.execute(query, timestamps)
+
+    # Execute the query with the start and end times
+    mycursor.execute(query, (timestamps[0], timestamps[-1]))
     rows = mycursor.fetchall()
     mydb.close()
+
+    # Format the results into a list of dictionaries
     data = []
     for row in rows:
         data.append({
-            "time": str(row[1]),
-            "avg_wind": row[2],
-            "max_gust": row[3],
-            "avg_dir": row[4]
+            "time": str(row[0]),
+            "avg_wind": row[1],
+            "max_gust": row[2],
+            "avg_dir": row[3]
         })
+
     print("Trend 24h data:", data)
     return jsonify(data)
 
