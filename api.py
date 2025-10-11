@@ -1,10 +1,13 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 import datetime
+from config import load_config, save_config
 
 app = Flask(__name__)
 CORS(app)
+
+location, db_enabled = load_config()
 
 def generate_timestamps(interval_seconds, duration_minutes):
     """Generates a list of timestamps at the specified interval for the given duration."""
@@ -106,6 +109,14 @@ def trend1h():
         })
     print("Trend 1h data:", data)
     return jsonify(data)
+
+@app.route('/save_settings', methods=['POST'])
+def save_settings():
+    data = request.get_json()
+    new_location = data['location']
+    new_db_enabled = data['dbEnabled']
+    save_config(new_location, new_db_enabled)
+    return jsonify({'message': 'Settings saved successfully'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
