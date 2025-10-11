@@ -55,16 +55,17 @@ def trend10m():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
+    location = "YourSpecificLocation"  # Replace with the actual location
     timestamps = generate_timestamps(15, 10)
     in_clause = ', '.join(['%s'] * len(timestamps))
     query = f"""
         SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause})
+        WHERE date = CURDATE() AND time IN ({in_clause}) AND location = %s
         GROUP BY date, time
         ORDER BY time ASC
     """
-    mycursor.execute(query, timestamps)
+    mycursor.execute(query, (location,) + timestamps)  # Pass location as a parameter
     rows = mycursor.fetchall()
     mydb.close()
     data = []
@@ -87,16 +88,17 @@ def trend1h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
+    location = "YourSpecificLocation"  # Replace with the actual location
     timestamps = generate_timestamps(60, 60)
     in_clause = ', '.join(['%s'] * len(timestamps))
     query = f"""
         SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause})
+        WHERE date = CURDATE() AND time IN ({in_clause}) AND location = %s
         GROUP BY date, time
         ORDER BY time ASC
     """
-    mycursor.execute(query, timestamps)
+    mycursor.execute(query, (location,) + timestamps)  # Pass location as a parameter
     rows = mycursor.fetchall()
     mydb.close()
     data = []
