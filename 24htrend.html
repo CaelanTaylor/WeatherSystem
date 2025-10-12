@@ -9,59 +9,100 @@
 <body>
     <div class="navbar">
         <div class="logo">
-            <h1 >WindScout</h1 >
-        </div >
+            <h1>WindScout</h1>
+        </div>
         <div class="navitems">
-            <ul >
-                <li ><a href="index.html">LiveWeather</a ></li >
-                <li ><a href="10mtrend.html">10 Minute Trend</a ></li >
-                <li ><a href="1htrend.html">1 Hour Trend</a ></li >
-                <li ><a href="analysis.html">Analysis</a ></li >
-                <li ><a href="settings.html">Settings</a></li >
-                <li class="active"><a href="24htrend.html">24 Hour Trend</a></li >
-            </ul >
-        </div >
-    </div >
+            <ul>
+                <li><a href="index.html">LiveWeather</a></li>
+                <li><a href="10mtrend.html">10 Minute Trend</a></li>
+                <li><a href="1htrend.html">1 Hour Trend</a></li>
+                <li><a href="analysis.html">Analysis</a></li>
+                <li><a href="settings.html">Settings</a></li>
+                <li class="active"><a href="24htrend.html">24 Hour Trend</a></li>
+            </ul>
+        </div>
+    </div>
     <div class="content">
         <div class="title">
-            <h1 >24 Hour Wind Trend</h1 >
-            <div class="line"></div >
-        </div >
-        <div id="trend-display">
-            <canvas id="windChart" width="800" height="400"></canvas>
-        </div >
-    </div >
+            <h1>24 Hour Wind Trend</h1>
+            <div class="line"></div>
+        </div>
+        <div class="dashboard">
+            <div>
+                <canvas id="avgWindChart" width="800" height="400"></canvas>
+            </div>
+            <div>
+                <canvas id="gustChart" width="800" height="400"></canvas>
+            </div>
+            <div>
+                <canvas id="dirChart" width="800" height="400"></canvas>
+            </div>
+        </div>
+    </div>
 
     <script>
         function fetchAndDisplayTrend() {
             fetch('http://192.168.192.186:5001/trend24h')
                 .then(response => response.json())
                 .then(data => {
-                    // Process the data
                     const labels = data.map(item => item.time);
                     const avgWindData = data.map(item => item.avg_wind);
                     const maxGustData = data.map(item => item.max_gust);
+                    const dirData = data.map(item => item.avg_dir);
 
-                    // Create the chart
-                    const ctx = document.getElementById('windChart').getContext('2d');
-                    const windChart = new Chart(ctx, {
+                    const avgWindCtx = document.getElementById('avgWindChart').getContext('2d');
+                    const avgWindChart = new Chart(avgWindCtx, {
                         type: 'line',
                         data: {
                             labels: labels,
-                            datasets: [
-                                {
-                                    label: 'Average Wind Speed',
-                                    data: avgWindData,
-                                    borderColor: 'blue',
-                                    fill: false
-                                },
-                                {
-                                    label: 'Max Gust',
-                                    data: maxGustData,
-                                    borderColor: 'red',
-                                    fill: false
+                            datasets: [{
+                                label: 'Average Wind Speed',
+                                data: avgWindData,
+                                borderColor: 'blue',
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
                                 }
-                            ]
+                            }
+                        }
+                    });
+
+                    const gustCtx = document.getElementById('gustChart').getContext('2d');
+                    const gustChart = new Chart(gustCtx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Max Gust',
+                                data: maxGustData,
+                                borderColor: 'red',
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+
+                    const dirCtx = document.getElementById('dirChart').getContext('2d');
+                    const dirChart = new Chart(dirCtx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Average Wind Direction',
+                                data: dirData,
+                                borderColor: 'green',
+                                fill: false
+                            }]
                         },
                         options: {
                             scales: {
