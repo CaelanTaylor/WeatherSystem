@@ -163,14 +163,17 @@ def trend24h():
     )
     mycursor = mydb.cursor()
 
-    # Modified query to calculate average and maximum over the entire 24-hour period
+    # Modified query to calculate average and maximum over hourly intervals for the last 24 hours
     query = f"""
         SELECT 
+            STR_TO_DATE(time, '%Y-%m-%d %H:%i:%s') AS time,
             AVG(windspeed) AS avg_wind,
             MAX(windspeed) AS max_gust,
             AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE()
+        WHERE date >= CURDATE() - INTERVAL 1 DAY
+        GROUP BY time
+        ORDER BY time ASC
     """
 
     mycursor.execute(query)
@@ -178,11 +181,12 @@ def trend24h():
     mydb.close()
 
     data = []
-    if rows and len(rows) > 0:
+    for row in rows:
         data.append({
-            "avg_wind": rows[0][0] if rows[0] and len(rows[0]) > 0 else None,
-            "max_gust": rows[0][1] if rows[0] and len(rows[0]) > 1 else None,
-            "avg_dir": rows[0][2] if rows[0] and len(rows[0]) > 2 else None
+            "time": str(row[0]),
+            "avg_wind": row[1],
+            "max_gust": row[2],
+            "avg_dir": row[3]
         })
     print("Trend 24h data:", data)
     return jsonify(data) 
