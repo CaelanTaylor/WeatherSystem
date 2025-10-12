@@ -162,8 +162,7 @@ def trend24h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-
-    # Modified query to calculate average and maximum over hourly intervals for the last 24 hours
+    
     query = f"""
         SELECT 
             STR_TO_DATE(time, '%Y-%m-%d %H:%i:%s') AS time,
