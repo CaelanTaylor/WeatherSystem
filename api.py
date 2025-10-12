@@ -147,33 +147,6 @@ def get_recent_weather_data():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/generate_forecast', methods=['POST'])
-def generate_forecast():
-    try:
-        data = request.get_json()
-        weather_data = data['weather_data']
-
-        # Format the data into a string for the prompt
-        data_string = "\n".join([
-            f"Date: {row['date']}, Time: {row['time']}, Wind Speed: {row['windspeed']} knots, Wind Direction: {row['winddirection']} degrees, Temperature: {row['wtemp']} °C"
-            for row in weather_data
-        ])
-
-        # Generate the forecast using Ollama
-        response = ollama.chat(
-            model="gemma3:1b",
-            messages=[
-                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
-            ]
-        )
-
-        forecast = response['message']['content']
-
-        return jsonify(forecast)
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/trend24h')
 def trend1h():
     mydb = mysql.connector.connect(
@@ -205,6 +178,33 @@ def trend1h():
         })
     print("Trend 24h data:", data)
     return jsonify(data)
+
+@app.route('/generate_forecast', methods=['POST'])
+def generate_forecast():
+    try:
+        data = request.get_json()
+        weather_data = data['weather_data']
+
+        # Format the data into a string for the prompt
+        data_string = "\n".join([
+            f"Date: {row['date']}, Time: {row['time']}, Wind Speed: {row['windspeed']} knots, Wind Direction: {row['winddirection']} degrees, Temperature: {row['wtemp']} °C"
+            for row in weather_data
+        ])
+
+        # Generate the forecast using Ollama
+        response = ollama.chat(
+            model="gemma3:1b",
+            messages=[
+                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
+            ]
+        )
+
+        forecast = response['message']['content']
+
+        return jsonify(forecast)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
