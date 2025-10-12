@@ -29,97 +29,119 @@
         </div>
         <div class="dashboard">
             <div>
-                <canvas id="avgWindChart" width="800" height="400"></canvas>
+                <canvas id="avgWindChart" width="400" height="200"></canvas>
             </div>
             <div>
-                <canvas id="gustChart" width="800" height="400"></canvas>
+                <canvas id="gustChart" width="400" height="200"></canvas>
             </div>
             <div>
-                <canvas id="dirChart" width="800" height="400"></canvas>
+                <canvas id="dirChart" width="400" height="200"></canvas>
             </div>
         </div>
-    </div>
+        <script>
+            function toggleMenu() {
+                document.querySelector('.navitems').classList.toggle('open');
+            }
 
-    <script>
-        function fetchAndDisplayTrend() {
-            fetch('http://192.168.192.186:5001/trend24h')
-                .then(response => response.json())
-                .then(data => {
-                    const labels = data.map(item => item.time);
-                    const avgWindData = data.map(item => item.avg_wind);
-                    const maxGustData = data.map(item => item.max_gust);
-                    const dirData = data.map(item => item.avg_dir);
+            let avgWindChart, gustChart, dirChart;
 
-                    const avgWindCtx = document.getElementById('avgWindChart').getContext('2d');
-                    const avgWindChart = new Chart(avgWindCtx, {
+            async function drawTrendGraphs() {
+                const res = await fetch('http://192.168.192.186:5001/trend24h');
+                const data = await res.json();
+                const labels = data.map(d => d.time.slice(-8));
+                const avgWind = data.map(d => d.avg_wind);
+                const maxGust = data.map(d => d.max_gust);
+                const avgDir = data.map(d => d.avg_dir);
+
+                // Calculate dynamic min and max for wind charts
+                const allWind = avgWind.concat(maxGust);
+                let minWind = Math.min(...allWind);
+                let maxWind = Math.max(...allWind);
+
+                // Add padding for better visuals
+                minWind = Math.floor(minWind - 2);
+                maxWind = Math.ceil(maxWind + 2);
+
+                // Ensure min is not negative
+                if (minWind < 0) minWind = 0;
+
+                const windOptions = {
+                    scales: {
+                        y: {
+                            min: minWind,
+                            max: maxWind,
+                            title: {
+                                display: true,
+                                text: 'Wind Speed (knots)'
+                            }
+                        }
+                    }
+                };
+
+                if (!avgWindChart) {
+                    avgWindChart = new Chart(document.getElementById('avgWindChart'), {
                         type: 'line',
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Average Wind Speed',
-                                data: avgWindData,
+                                label: 'Average Wind (knots)',
+                                data: avgWind,
                                 borderColor: 'blue',
                                 fill: false
                             }]
                         },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
+                        options: windOptions
                     });
+                } else {
+                    avgWindChart.data.labels = labels;
+                    avgWindChart.data.datasets[0].data = avgWind;
+                    avgWindChart.options = windOptions;
+                    avgWindChart.update();
+                }
 
-                    const gustCtx = document.getElementById('gustChart').getContext('2d');
-                    const gustChart = new Chart(gustCtx, {
+                if (!gustChart) {
+                    gustChart = new Chart(document.getElementById('gustChart'), {
                         type: 'line',
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Max Gust',
-                                data: maxGustData,
+                                label: 'Highest Gust (knots)',
+                                data: maxGust,
                                 borderColor: 'red',
                                 fill: false
                             }]
                         },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
+                        options: windOptions
                     });
+                } else {
+                    gustChart.data.labels = labels;
+                    gustChart.data.datasets[0].data = maxGust;
+                    gustChart.options = windOptions;
+                    gustChart.update();
+                }
 
-                    const dirCtx = document.getElementById('dirChart').getContext('2d');
-                    const dirChart = new Chart(dirCtx, {
+                if (!dirChart) {
+                    dirChart = new Chart(document.getElementById('dirChart'), {
                         type: 'line',
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Average Wind Direction',
-                                data: dirData,
+                                label: 'Average Direction (°)',
+                                data: avgDir,
                                 borderColor: 'green',
                                 fill: false
                             }]
-                        },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
                         }
                     });
-                })
-                .catch(error => {
-                    console.error("Error fetching 24-hour trend data:", error);
-                    document.getElementById('trend-display').innerHTML = "<p>Error loading data.</p>";
-                });
-        }
+                } else {
+                    dirChart.data.labels = labels;
+                    dirChart.data.datasets[0].data = avgDir;
+                    dirChart.update();
+                }
+            }
 
-        fetchAndDisplayTrend();
-    </script>
+            drawTrendGraphs();
+            setInterval(drawTrendGraphs, 20000); // Auto update every 60 seconds
+        </script>
 </body>
 </html>
