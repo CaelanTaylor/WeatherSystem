@@ -148,7 +148,7 @@ def get_recent_weather_data():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/trend24h')
-def trend1h():
+def trend24h():
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
