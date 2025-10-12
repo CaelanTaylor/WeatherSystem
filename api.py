@@ -67,12 +67,15 @@ def trend10m():
     mydb.close()
     data = []
     for row in rows:
-        data.append({
-            "time": str(row[1]),
-            "avg_wind": row[2],
-            "max_gust": row[3],
-            "avg_dir": row[4]
-        })
+        if row and len(row) > 1:  # Check if row exists and has at least two elements
+            data.append({
+                "time": str(row[1]) if row[1] is not None else None,  # Handle potential None values
+                "avg_wind": row[2],
+                "max_gust": row[3],
+                "avg_dir": row[4]
+            })
+        else:
+            print("Skipping row due to missing data")
     print("Trend 10m data:", data)
     return jsonify(data)
 
@@ -99,12 +102,15 @@ def trend1h():
     mydb.close()
     data = []
     for row in rows:
-        data.append({
-            "time": str(row[1]),
-            "avg_wind": row[2],
-            "max_gust": row[3],
-            "avg_dir": row[4]
-        })
+        if row and len(row) > 1:  # Check if row exists and has at least two elements
+            data.append({
+                "time": str(row[1]) if row[1] is not None else None,  # Handle potential None values
+                "avg_wind": row[2],
+                "max_gust": row[3],
+                "avg_dir": row[4]
+            })
+        else:
+            print("Skipping row due to missing data")
     print("Trend 1h data:", data)
     return jsonify(data)
 
@@ -172,14 +178,14 @@ def trend24h():
     mydb.close()
 
     data = []
-    for row in rows:
+    if rows and len(rows) > 0:
         data.append({
-            "avg_wind": row[0],
-            "max_gust": row[1],
-            "avg_dir": row[2]
+            "avg_wind": rows[0][0] if rows[0] and len(rows[0]) > 0 else None,
+            "max_gust": rows[0][1] if rows[0] and len(rows[0]) > 1 else None,
+            "avg_dir": rows[0][2] if rows[0] and len(rows[0]) > 2 else None
         })
     print("Trend 24h data:", data)
-    return jsonify(data)
+    return jsonify(data) 
 
 @app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
