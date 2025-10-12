@@ -156,26 +156,27 @@ def trend24h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    # Reduce the interval to 60 seconds (1 minute)
-    timestamps = generate_timestamps(60, 1440)
-    in_clause = ', '.join(['%s'] * len(timestamps))
+
+    # Modified query to calculate average and maximum over the entire 24-hour period
     query = f"""
-        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+        SELECT 
+            AVG(windspeed) AS avg_wind,
+            MAX(windspeed) AS max_gust,
+            AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause})
-        GROUP BY date, time
-        ORDER BY time ASC
+        WHERE date = CURDATE()
     """
-    mycursor.execute(query, timestamps)
+
+    mycursor.execute(query)
     rows = mycursor.fetchall()
     mydb.close()
+
     data = []
     for row in rows:
         data.append({
-            "time": str(row[1]),
-            "avg_wind": row[2],
-            "max_gust": row[3],
-            "avg_dir": row[4]
+            "avg_wind": row[0],
+            "max_gust": row[1],
+            "avg_dir": row[2]
         })
     print("Trend 24h data:", data)
     return jsonify(data)
