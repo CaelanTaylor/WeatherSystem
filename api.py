@@ -156,7 +156,8 @@ def trend24h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    timestamps = generate_timestamps(900, 1440)
+    # Reduce the interval to 60 seconds (1 minute)
+    timestamps = generate_timestamps(60, 1440)
     in_clause = ', '.join(['%s'] * len(timestamps))
     query = f"""
         SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
