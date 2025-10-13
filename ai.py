@@ -2,6 +2,7 @@ import ollama
 import mysql.connector
 import datetime
 import threading
+import time
 
 # Database connection details
 db_host = "localhost"
@@ -54,6 +55,7 @@ def generate_forecast(data, callback_function):
     ])
 
     try:
+        print("Starting forecast generation...")
         response = ollama.chat(
             model=ollama_model,
             messages=[
@@ -68,9 +70,11 @@ def generate_forecast(data, callback_function):
         else:
             forecast = "Could not extract forecast from response."
 
+        print("Forecast generation complete.")
         callback_function(forecast)
 
     except Exception as e:
+        print("Error during forecast generation:", e)
         callback_function(f"Error generating forecast: {e}")
 
 def callback_function(forecast):
