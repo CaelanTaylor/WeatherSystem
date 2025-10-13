@@ -27,7 +27,7 @@ def get_wind_speed():
     wind_speed = (raw_value / 1023.0) * 30  # Linear mapping: 0–1023 → 0–30 m/s
     wind_speed_knots = wind_speed * 1.94384
     # Round to 4 significant figures
-    wind_speed_knots = float(f"{wind_speed_knots:.4g}")
+    wind_speed_knots = float(f"{wind_speed_knots:.4g}") * 1.5
     return wind_speed_knots
 
 def get_wind_dir():
