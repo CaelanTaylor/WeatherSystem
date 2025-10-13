@@ -43,7 +43,6 @@ def latest():
     else:
         return jsonify({"error": "No data"}), 404
 
-# Example for Flask API endpoint
 @app.route('/trend10m')
 def trend10m():
     mydb = mysql.connector.connect(
@@ -67,9 +66,9 @@ def trend10m():
     mydb.close()
     data = []
     for row in rows:
-        if row and len(row) > 1:  # Check if row exists and has at least two elements
+        if row and len(row) > 0:
             data.append({
-                "time": str(row[1]) if row[1] is not None else None,  # Handle potential None values
+                "time": str(row[1]) if row[1] is not None else None,
                 "avg_wind": row[2],
                 "max_gust": row[3],
                 "avg_dir": row[4]
@@ -102,9 +101,9 @@ def trend1h():
     mydb.close()
     data = []
     for row in rows:
-        if row and len(row) > 1:  # Check if row exists and has at least two elements
+        if row and len(row) > 0:
             data.append({
-                "time": str(row[1]) if row[1] is not None else None,  # Handle potential None values
+                "time": str(row[1]) if row[1] is not None else None,
                 "avg_wind": row[2],
                 "max_gust": row[3],
                 "avg_dir": row[4]
@@ -123,29 +122,27 @@ def trend24h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    timestamps = generate_timestamps(900, 1440)
-    in_clause = ', '.join(['%s'] * len(timestamps))
+
     query = f"""
-        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+        SELECT 
+            AVG(windspeed) AS avg_wind,
+            MAX(windspeed) AS max_gust,
+            AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause})
-        GROUP BY date, time
-        ORDER BY time ASC
+        WHERE date = CURDATE()
     """
-    mycursor.execute(query, timestamps)
+
+    mycursor.execute(query)
     rows = mycursor.fetchall()
     mydb.close()
+
     data = []
-    for row in rows:
-        if row and len(row) > 1:  # Check if row exists and has at least two elements
-            data.append({
-                "time": str(row[1]) if row[1] is not None else None,  # Handle potential None values
-                "avg_wind": row[2],
-                "max_gust": row[3],
-                "avg_dir": row[4]
-            })
-        else:
-            print("Skipping row due to missing data")
+    if rows:
+        data.append({
+            "avg_wind": rows[0][0],
+            "max_gust": rows[0][1],
+            "avg_dir": rows[0][2]
+        })
     print("Trend 1h data:", data)
     return jsonify(data)
 
