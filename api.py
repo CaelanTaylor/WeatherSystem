@@ -52,30 +52,25 @@ def trend10m():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    timestamps = generate_timestamps(15, 10)
-    in_clause = ', '.join(['%s'] * len(timestamps))
-    query = f"""
-        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+    mycursor.execute("""
+        SELECT 
+            date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause})
+        WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 10 MINUTE
         GROUP BY date, time
         ORDER BY time ASC
-    """
-    mycursor.execute(query, timestamps)
+    """)
     rows = mycursor.fetchall()
     mydb.close()
     data = []
     for row in rows:
-        if row and len(row) > 0:
-            data.append({
-                "time": str(row[1]) if row[1] is not None else None,
-                "avg_wind": row[2],
-                "max_gust": row[3],
-                "avg_dir": row[4]
-            })
-        else:
-            print("Skipping row due to missing data")
-    print("Trend 10m data:", data)
+        data.append({
+            "time": str(row[1]),  # Format time for display
+            "avg_wind": row[2],
+            "max_gust": row[3],
+            "avg_dir": row[4]
+        })
+    print("Trend 10m data:", data)  # Debugging statement
     return jsonify(data)
 
 @app.route('/trend1h')
@@ -87,30 +82,25 @@ def trend1h():
         database="weatherdata"
     )
     mycursor = mydb.cursor()
-    timestamps = generate_timestamps(60, 60)
-    in_clause = ', '.join(['%s'] * len(timestamps))
-    query = f"""
-        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+    mycursor.execute("""
+        SELECT 
+            date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time IN ({in_clause})
+        WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 1 HOUR
         GROUP BY date, time
         ORDER BY time ASC
-    """
-    mycursor.execute(query, timestamps)
+    """)
     rows = mycursor.fetchall()
     mydb.close()
     data = []
     for row in rows:
-        if row and len(row) > 0:
-            data.append({
-                "time": str(row[1]) if row[1] is not None else None,
-                "avg_wind": row[2],
-                "max_gust": row[3],
-                "avg_dir": row[4]
-            })
-        else:
-            print("Skipping row due to missing data")
-    print("Trend 1h data:", data)
+        data.append({
+            "time": str(row[1]),  # Format time for display
+            "avg_wind": row[2],
+            "max_gust": row[3],
+            "avg_dir": row[4]
+        })
+    print("Trend 1h data:", data)  # Debugging statement
     return jsonify(data)
 
 @app.route('/trend24h')
