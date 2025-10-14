@@ -89,5 +89,6 @@ def main():
     else:
         print("Failed to retrieve weather data.")
 
+# Ensure the main function is called when the script is executed
 if __name__ == "__main__":
     main()

@@ -175,7 +175,7 @@ def get_recent_weather_data():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/generate_forecast', methods=['POST'])
+@app.route('/generate_forecast')
 def generate_forecast():
     try:
         data = request.get_json()
@@ -199,7 +199,7 @@ def generate_forecast():
         except Exception as e:
             return jsonify({'error': f'Error calling Ollama API: {str(e)}'}), 500
 
-        return jsonify(forecast)
+        return jsonify({'forecast': forecast})  # Return as JSON with 'forecast' key
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
