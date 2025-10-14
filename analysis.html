@@ -36,45 +36,56 @@
     </div>
     <script>
         function updateForecast() {
-            document.getElementById('loading-indicator').style.display = 'block';
-            document.getElementById('forecast-display').innerHTML = '<h2>Forecast Section</h2><p>Generating forecast...</p><div id="loading-indicator" style="display: block;">Generating forecast...</div>';
+            const forecastDisplay = document.getElementById('forecast-display');
+            const loadingIndicator = document.getElementById('loading-indicator');
 
-            fetch('http://192.168.192.186:5001/get_recent_weather_data')
-                .then(response => response.json())
+            // Show a loading message immediately
+            forecastDisplay.innerHTML = `<h2>Forecast Section</h2><p>Generating forecast...</p>`;
+            loadingIndicator.style.display = 'block';
+
+            // Step 1: Fetch recent weather data from your API
+            fetch('http://localhost:5001/get_recent_weather_data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    // Check if the database returned any data
                     if (data && data.length > 0) {
-                        window.ai_thread = window.ai_thread || new Promise((resolve, reject) => {
-                            fetch('http://192.168.192.186:5001/generate_forecast', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ weather_data: data })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                // Handle the response
-                                console.log(data);
-                                document.getElementById('forecast-display').innerHTML = `<h2>Forecast Section</h2><p>${data.forecast}</p>`;
-                                document.getElementById('loading-indicator').style.display = 'none';
-                                resolve();
-                            })
-                            .catch(error => {
-                                console.error('Error generating forecast:', error);
-                                document.getElementById('forecast-display').innerHTML = `<p>Error generating forecast.</p>`;
-                                document.getElementById('loading-indicator').style.display = 'none';
-                                reject(error);
-                            });
+                        // Step 2: If data exists, send it to the generate_forecast endpoint
+                        return fetch('http://localhost:5001/generate_forecast', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ weather_data: data })
                         });
                     } else {
-                        document.getElementById('forecast-display').innerHTML = `<p>No data available.</p>`;
-                        document.getElementById('loading-indicator').style.display = 'none';
+                        // If no data, stop here and show a message
+                        throw new Error('No recent weather data available to generate a forecast.');
                     }
                 })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Forecast generation failed: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(forecastData => {
+                    // Step 3: Display the forecast from Ollama
+                    // Using <pre> tag to preserve the table formatting from the AI
+                    forecastDisplay.innerHTML = `<h2>Forecast Section</h2><pre>${forecastData.forecast}</pre>`;
+                })
                 .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('forecast-display').innerHTML = `<p>Error fetching data.</p>`;
-                    document.getElementById('loading-indicator').style.display = 'none';
+                    // Catch any error from the entire chain and display it
+                    console.error('Error during forecast process:', error);
+                    forecastDisplay.innerHTML = `<h2>Forecast Section</h2><p>An error occurred: ${error.message}</p>`;
+                })
+                .finally(() => {
+                    // Hide the loading indicator regardless of success or failure
+                    loadingIndicator.style.display = 'none';
                 });
         }
     </script>
