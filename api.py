@@ -188,14 +188,16 @@ def generate_forecast():
         ])
 
         # Generate the forecast using Ollama
-        response = ollama.chat(
-            model="gemma3:1b",
-            messages=[
-                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
-            ]
-        )
-
-        forecast = response['message']['content']
+        try:
+            response = ollama.chat(
+                model="gemma3:1b",
+                messages=[
+                    {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
+                ]
+            )
+            forecast = response['message']['content']
+        except Exception as e:
+            return jsonify({'error': f'Error calling Ollama API: {str(e)}'}), 500
 
         return jsonify(forecast)
 

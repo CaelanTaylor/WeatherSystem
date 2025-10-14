@@ -4,9 +4,6 @@ import socket
 import compass
 from math import exp
 import datetime
-import ollama
-
-app = Flask(__name__)
 
 cmp = compass.QMC5883L()
 
