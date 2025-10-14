@@ -175,7 +175,7 @@ def get_recent_weather_data():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/generate_forecast')
+@app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
     try:
         data = request.get_json()

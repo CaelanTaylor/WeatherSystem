@@ -51,9 +51,11 @@
                                 },
                                 body: JSON.stringify({ weather_data: data })
                             })
-                            .then(response => response.text())
-                            .then(forecast => {
-                                document.getElementById('forecast-display').innerHTML = `<h2>Forecast Section</h2><p>${forecast}</p>`;
+                            .then(response => response.json())
+                            .then(data => {
+                                // Handle the response
+                                console.log(data);
+                                document.getElementById('forecast-display').innerHTML = `<h2>Forecast Section</h2><p>${data.forecast}</p>`;
                                 document.getElementById('loading-indicator').style.display = 'none';
                                 resolve();
                             })
