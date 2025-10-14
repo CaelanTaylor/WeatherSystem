@@ -44,7 +44,7 @@
             loadingIndicator.style.display = 'block';
 
             // Step 1: Fetch recent weather data from your API
-            fetch('http://localhost:5001/get_recent_weather_data')
+            fetch('http://192.168.192.186:5001/get_recent_weather_data')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -55,7 +55,7 @@
                     // Check if the database returned any data
                     if (data && data.length > 0) {
                         // Step 2: If data exists, send it to the generate_forecast endpoint
-                        return fetch('http://localhost:5001/generate_forecast', {
+                        return fetch('http://192.168.192.186:5001/generate_forecast', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
