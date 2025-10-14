@@ -162,8 +162,8 @@ def get_recent_weather_data():
         formatted_data = []
         for row in data:
             formatted_data.append({
-                'date': row[0],
-                'time': row[1],
+                'date': str(row[0]),
+                'time': str(row[1]),
                 'windspeed': row[2],
                 'winddirection': row[3],
                 'wtemp': row[4],
