@@ -13,6 +13,8 @@ db_database = "weatherdata"
 # Ollama model to use
 ollama_model = "gemma3:1b"
 
+ollama_api_url = "http://10.0.0.61:11434" 
+
 def get_recent_weather_data(days=7):
     """Fetches recent weather data from the database."""
     try:
@@ -54,13 +56,19 @@ def generate_forecast(data, callback_function):
         for row in data
     ])
 
+    # Get the current time
+    now = datetime.datetime.now()
+    current_time = now.strftime('%H:%M:%S')
+
+    # Generate the forecast using Ollama
     try:
         print("Starting forecast generation...")
         response = ollama.chat(
             model=ollama_model,
             messages=[
-                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')}. Do not ask questions or have any fluff. Just give the forecast."}
-            ]
+                {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')} and time is {current_time}. Do not ask questions or have any fluff. Just give the forecast in words."}
+            ],
+            api_url=ollama_api_url  # Specify the API URL
         )
 
         print("Raw response from Ollama:", response)  # Print the raw response
