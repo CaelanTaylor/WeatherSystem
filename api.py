@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Replace with the actual address of your Ollama server
-ollama_api_url = "http://ai.local:11434"  # Example: http://192.168.1.100:11434
+ollama_api_url = "http://10.0.0.61:11434"  # Example: http://192.168.1.100:11434
 
 def generate_timestamps(interval_seconds, duration_minutes):
     """Generates a list of timestamps at the specified interval for the given duration."""
