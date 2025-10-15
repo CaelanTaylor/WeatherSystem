@@ -192,10 +192,10 @@ def generate_forecast():
                         "role": "user",
                         "content": (
                             f"Here is recent weather data:\n\n{data_string}\n\n"
-                            f"Predict wind speed and direction for morning, midday, afternoon and night of the next 2 days. "
-                            f"Provide the prediction with 'Wind Speed (knots)', "
-                            f"and 'Wind Direction (degrees)'. Today is {datetime.date.today()} "
-                            f"and time is {current_time}. No fluff — only the forecast based on previous weather data."
+                            f"Analyze the recent weather data and predict the wind conditions for the next two days, including morning, midday, afternoon, and night. "
+                            f"Provide the prediction in a detailed format, including wind speed (knots) and wind direction (degrees). "
+                            f"For example: 'Northwest 20 knots gusting 30 knots, turning southerly 20 knots gusting 30 knots in the afternoon. ' "
+                            f"Today is {datetime.date.today()} and time is {current_time}. No fluff — only the forecast based on previous weather data."
                         )
                     }
                 ]
