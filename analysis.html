@@ -22,8 +22,6 @@
     </div>
     <div class="content">
         <div class="title">
-            <h1>Weather Analysis</h1>
-            <div class="line"></div>
         </div>
         <button class="menu-toggle" onclick="updateForecast()">Update Forecast</button>
         <div id="forecast-display">
@@ -75,12 +73,12 @@
                 .then(forecastData => {
                     // Step 3: Display the forecast from Ollama
                     // Using <pre> tag to preserve the table formatting from the AI
-                    forecastDisplay.innerHTML = `<h2>Forecast Section</h2><pre>${forecastData.forecast}</pre>`;
+                    forecastDisplay.innerHTML = `<h2 >Forecast Section</h2 ><pre style="text-align: center;">${forecastData.forecast}</pre>`;
                 })
                 .catch(error => {
                     // Catch any error from the entire chain and display it
                     console.error('Error during forecast process:', error);
-                    forecastDisplay.innerHTML = `<h2>Forecast Section</h2><p>An error occurred: ${error.message}</p>`;
+                    forecastDisplay.innerHTML = `<h2 >Forecast Section</h2 ><p>An error occurred: ${error.message}</p>`;
                 })
                 .finally(() => {
                     // Hide the loading indicator regardless of success or failure
@@ -89,5 +87,5 @@
         }
         updateForecast();
     </script>
-</body>
-</html>
+</body >
+</html >
