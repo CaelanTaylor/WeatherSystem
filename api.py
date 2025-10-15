@@ -7,9 +7,6 @@ import ollama
 app = Flask(__name__)
 CORS(app)
 
-# Replace with the actual address of your Ollama server
-ollama_api_url = "http://10.0.0.61:11434"  # Example: http://192.168.1.100:11434
-
 def generate_timestamps(interval_seconds, duration_minutes):
     """Generates a list of timestamps at the specified interval for the given duration."""
     now = datetime.datetime.now()
@@ -201,7 +198,6 @@ def generate_forecast():
                 messages=[
                     {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')} and time is {current_time}. Do not ask questions or have any fluff. Just give the forecast in words."}
                 ],
-                api_url=ollama_api_url
             )
             forecast = response['message']['content']
         except Exception as e:
