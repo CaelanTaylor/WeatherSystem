@@ -5,7 +5,7 @@ import datetime
 from ollama import Client  # use the official Ollama Python client
 
 # --- CONFIGURATION ---
-OLLAMA_HOST = "http://10.0.0.61:11434" 
+OLLAMA_HOST = "http://ai.local:11434" 
 OLLAMA_MODEL = "qwen3:1.7b"
 
 # Create Ollama client for remote connection
