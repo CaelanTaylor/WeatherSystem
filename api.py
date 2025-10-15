@@ -5,7 +5,7 @@ import datetime
 from ollama import Client  # use the official Ollama Python client
 
 # --- CONFIGURATION ---
-OLLAMA_HOST = "http://192.168.1.100:11434"  # 👈 replace with your Ollama host or "http://localhost:11434" if tunneled
+OLLAMA_HOST = "http://10.0.0.61:11434"  # 👈 replace with your Ollama host or "http://localhost:11434" if tunneled
 OLLAMA_MODEL = "gemma3:1b"
 
 # Create Ollama client for remote connection
