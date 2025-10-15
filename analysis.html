@@ -22,6 +22,8 @@
     </div>
     <div class="content">
         <div class="title">
+            <h1>LiveWeather</h1>
+            <div class="line"></div>
         </div>
         <button class="menu-toggle" onclick="updateForecast()">Update Forecast</button>
         <div id="forecast-display">
@@ -37,7 +39,7 @@
             const loadingIndicator = document.getElementById('loading-indicator');
 
             // Show a loading message immediately
-            forecastDisplay.innerHTML = `<h2>Forecast Section</h2><p>Generating forecast...</p>`;
+            forecastDisplay.innerHTML = `<p>Generating forecast...</p>`;
             loadingIndicator.style.display = 'block';
 
             // Step 1: Fetch recent weather data from your API
@@ -73,12 +75,12 @@
                 .then(forecastData => {
                     // Step 3: Display the forecast from Ollama
                     // Using <pre> tag to preserve the table formatting from the AI
-                    forecastDisplay.innerHTML = `<h2 >Forecast Section</h2 ><pre style="text-align: center;">${forecastData.forecast}</pre>`;
+                    forecastDisplay.innerHTML = `<pre style="text-align: center;">${forecastData.forecast}</pre>`;
                 })
                 .catch(error => {
                     // Catch any error from the entire chain and display it
                     console.error('Error during forecast process:', error);
-                    forecastDisplay.innerHTML = `<h2 >Forecast Section</h2 ><p>An error occurred: ${error.message}</p>`;
+                    forecastDisplay.innerHTML = `<p>An error occurred: ${error.message}</p>`;
                 })
                 .finally(() => {
                     // Hide the loading indicator regardless of success or failure
