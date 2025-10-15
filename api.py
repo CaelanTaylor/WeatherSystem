@@ -138,13 +138,11 @@ def generate_forecast():
     try:
         mydb = get_db_connection()
         mycursor = mydb.cursor()
-        
-        # --- THE FIX: HOURLY AGGREGATION WITH MAX GUST FOR ENTIRE DATASET ---
         mycursor.execute("""
             SELECT
-                DATE_FORMAT(CONCAT(date, ' ', time), '%Y-%m-%d %H:00:00') AS hourly_timestamp,
+                DATE_FORMAT(date, '%Y-%m-%d %H:00:00') AS hourly_timestamp,
                 AVG(windspeed) AS avg_windspeed,
-                MAX(windspeed) AS max_windgust,  -- NEW: Max Gust for the hour
+                MAX(windspeed) AS max_windgust,
                 AVG(winddirection) AS avg_winddirection,
                 AVG(wtemp) AS avg_wtemp,
                 AVG(atemp) AS avg_atemp
@@ -152,28 +150,27 @@ def generate_forecast():
             GROUP BY hourly_timestamp
             ORDER BY hourly_timestamp ASC
         """)
-        all_data = mycursor.fetchall()
+        hourly_data = mycursor.fetchall()
         mydb.close()
-        
-        if not all_data:
+
+        if not hourly_data:
             return jsonify({"error": "No historical data available for aggregation."}), 404
 
-        # --- DATA PROCESSING: VERBOSE STRING FORMAT (as requested) ---
-        # The formatting loop is updated to include the new Max Wind Gust column (index 2).
+        # --- Format Data for Ollama ---
         data_string = "\n".join([
             f"Timestamp: {row[0]}, "
             f"Avg Wind Speed: {row[1]:.2f} knots, "
-            f"Max Wind Gust: {row[2]:.2f} knots, "  # Display Max Gust
+            f"Max Wind Gust: {row[2]:.2f} knots, "
             f"Avg Wind Direction: {row[3]:.2f}°, "
             f"Avg Water Temp: {row[4]:.2f}°C, "
             f"Avg Air Temp: {row[5]:.2f}°C"
-            for row in all_data
+            for row in hourly_data
         ])
 
         now = datetime.datetime.now()
         current_time = now.strftime("%H:%M:%S")
 
-        # Send request to remote Ollama
+        # --- Send Request to Ollama ---
         try:
             response = ollama_client.chat(
                 model=OLLAMA_MODEL,
@@ -181,7 +178,7 @@ def generate_forecast():
                     {
                         "role": "user",
                         "content": (
-                            f"Here is all historical data, aggregated by the hour ({len(all_data)} total entries). Each entry contains the average wind speed, **MAXIMUM WIND GUST**, and average wind direction for that hour:\n\n{data_string}\n\n"
+                            f"Here is all historical data, aggregated by the hour ({len(hourly_data)} total entries). Each entry contains the average wind speed, **MAXIMUM WIND GUST**, and average wind direction for that hour:\n\n{data_string}\n\n"
                             f"Analyze this hourly averaged weather data and predict the wind conditions for the next two days, including morning, midday, afternoon, and night. "
                             f"Provide the prediction in a detailed format, including wind speed (knots) and wind direction (degrees). "
                             f"Today is {datetime.date.today()} and time is {current_time}. No fluff — only the forecast based on previous weather data."
@@ -192,7 +189,6 @@ def generate_forecast():
 
             forecast = response["message"]["content"]
         except Exception as e:
-            # If this fails, the model is likely too small for the large aggregated prompt.
             return jsonify({"error": f"Ollama API error: {str(e)}"}), 500
 
         return jsonify({"forecast": forecast})
