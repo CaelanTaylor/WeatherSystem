@@ -73,7 +73,7 @@ def trend10m():
     mycursor.execute("""
         SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 10 MINUTE
+        WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
         GROUP BY date, time
         ORDER BY time ASC
     """)
@@ -95,7 +95,7 @@ def trend1h():
     mycursor.execute("""
         SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 1 HOUR
+        WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
         GROUP BY date, time
         ORDER BY time ASC
     """)
@@ -117,7 +117,7 @@ def trend24h():
     mycursor.execute("""
         SELECT AVG(windspeed), MAX(windspeed), AVG(winddirection)
         FROM weatherdata
-        WHERE date = CURDATE()
+        WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
     """)
     row = mycursor.fetchone()
     mydb.close()
@@ -136,19 +136,37 @@ def trend24h():
 @app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
     try:
-        # Directly query the entire database
         mydb = get_db_connection()
         mycursor = mydb.cursor()
-        mycursor.execute("SELECT * FROM weatherdata ORDER BY date DESC, time DESC")
+        
+        # --- THE FIX: HOURLY AGGREGATION WITH MAX GUST FOR ENTIRE DATASET ---
+        mycursor.execute("""
+            SELECT
+                DATE_FORMAT(CONCAT(date, ' ', time), '%Y-%m-%d %H:00:00') AS hourly_timestamp,
+                AVG(windspeed) AS avg_windspeed,
+                MAX(windspeed) AS max_windgust,  -- NEW: Max Gust for the hour
+                AVG(winddirection) AS avg_winddirection,
+                AVG(wtemp) AS avg_wtemp,
+                AVG(atemp) AS avg_atemp
+            FROM weatherdata
+            GROUP BY hourly_timestamp
+            ORDER BY hourly_timestamp ASC
+        """)
         all_data = mycursor.fetchall()
         mydb.close()
+        
+        if not all_data:
+            return jsonify({"error": "No historical data available for aggregation."}), 404
 
-        # Format weather data as a readable text prompt
+        # --- DATA PROCESSING: VERBOSE STRING FORMAT (as requested) ---
+        # The formatting loop is updated to include the new Max Wind Gust column (index 2).
         data_string = "\n".join([
-            f"Date: {row[0]}, Time: {row[1]}, "
-            f"Wind Speed: {row[2]} knots, "
-            f"Wind Direction: {row[3]}°, "
-            f"Water Temp: {row[4]}°C, Air Temp: {row[5]}°C"
+            f"Timestamp: {row[0]}, "
+            f"Avg Wind Speed: {row[1]:.2f} knots, "
+            f"Max Wind Gust: {row[2]:.2f} knots, "  # Display Max Gust
+            f"Avg Wind Direction: {row[3]:.2f}°, "
+            f"Avg Water Temp: {row[4]:.2f}°C, "
+            f"Avg Air Temp: {row[5]:.2f}°C"
             for row in all_data
         ])
 
@@ -163,8 +181,8 @@ def generate_forecast():
                     {
                         "role": "user",
                         "content": (
-                            f"Here is all weather data:\n\n{data_string}\n\n"
-                            f"Analyze the weather data and predict the wind conditions for the next two days, including morning, midday, afternoon, and night. "
+                            f"Here is all historical data, aggregated by the hour ({len(all_data)} total entries). Each entry contains the average wind speed, **MAXIMUM WIND GUST**, and average wind direction for that hour:\n\n{data_string}\n\n"
+                            f"Analyze this hourly averaged weather data and predict the wind conditions for the next two days, including morning, midday, afternoon, and night. "
                             f"Provide the prediction in a detailed format, including wind speed (knots) and wind direction (degrees). "
                             f"Today is {datetime.date.today()} and time is {current_time}. No fluff — only the forecast based on previous weather data."
                         )
@@ -174,6 +192,7 @@ def generate_forecast():
 
             forecast = response["message"]["content"]
         except Exception as e:
+            # If this fails, the model is likely too small for the large aggregated prompt.
             return jsonify({"error": f"Ollama API error: {str(e)}"}), 500
 
         return jsonify({"forecast": forecast})
