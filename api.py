@@ -5,7 +5,7 @@ import datetime
 from ollama import Client  # use the official Ollama Python client
 
 # --- CONFIGURATION ---
-OLLAMA_HOST = "http://ai.local:11434" 
+OLLAMA_HOST = "http://ai.local:11434"
 OLLAMA_MODEL = "gemma3:1b"
 
 # Create Ollama client for remote connection
@@ -14,6 +14,7 @@ ollama_client = Client(host=OLLAMA_HOST)
 # Flask setup
 app = Flask(__name__)
 CORS(app)
+
 
 # --- HELPER FUNCTIONS ---
 
@@ -132,52 +133,23 @@ def trend24h():
     return jsonify(data)
 
 
-@app.route('/get_recent_weather_data', methods=['GET'])
-def get_recent_weather_data():
-    try:
-        mydb = get_db_connection()
-        mycursor = mydb.cursor()
-        mycursor.execute("""
-            SELECT date, time, windspeed, winddirection, wtemp, atemp
-            FROM weatherdata
-            ORDER BY date DESC, time DESC
-            LIMIT 10
-        """)
-        rows = mycursor.fetchall()
-        mydb.close()
-
-        formatted_data = [
-            {
-                "date": str(row[0]),
-                "time": str(row[1]),
-                "windspeed": row[2],
-                "winddirection": row[3],
-                "wtemp": row[4],
-                "atemp": row[5],
-            }
-            for row in rows
-        ]
-        return jsonify(formatted_data)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 @app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
     try:
-        data = request.get_json()
-        weather_data = data.get("weather_data", [])
-
-        if not weather_data:
-            return jsonify({"error": "Missing weather data"}), 400
+        # Directly query the entire database
+        mydb = get_db_connection()
+        mycursor = mydb.cursor()
+        mycursor.execute("SELECT * FROM weatherdata ORDER BY date DESC, time DESC")
+        all_data = mycursor.fetchall()
+        mydb.close()
 
         # Format weather data as a readable text prompt
         data_string = "\n".join([
-            f"Date: {row['date']}, Time: {row['time']}, "
-            f"Wind Speed: {row['windspeed']} knots, "
-            f"Wind Direction: {row['winddirection']}°, "
-            f"Water Temp: {row['wtemp']}°C, Air Temp: {row['atemp']}°C"
-            for row in weather_data
+            f"Date: {row[0]}, Time: {row[1]}, "
+            f"Wind Speed: {row[2]} knots, "
+            f"Wind Direction: {row[3]}°, "
+            f"Water Temp: {row[4]}°C, Air Temp: {row[5]}°C"
+            for row in all_data
         ])
 
         now = datetime.datetime.now()
@@ -191,10 +163,9 @@ def generate_forecast():
                     {
                         "role": "user",
                         "content": (
-                            f"Here is recent weather data:\n\n{data_string}\n\n"
-                            f"Analyze the recent weather data and predict the wind conditions for the next two days, including morning, midday, afternoon, and night. "
+                            f"Here is all weather data:\n\n{data_string}\n\n"
+                            f"Analyze the weather data and predict the wind conditions for the next two days, including morning, midday, afternoon, and night. "
                             f"Provide the prediction in a detailed format, including wind speed (knots) and wind direction (degrees). "
-                            f"For example: 'Northwest 20 knots gusting 30 knots, turning southerly 20 knots gusting 30 knots in the afternoon. ' "
                             f"Today is {datetime.date.today()} and time is {current_time}. No fluff — only the forecast based on previous weather data."
                         )
                     }
