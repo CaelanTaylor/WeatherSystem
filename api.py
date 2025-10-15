@@ -2,59 +2,75 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 import datetime
-import ollama
+from ollama import Client  # use the official Ollama Python client
 
+# --- CONFIGURATION ---
+OLLAMA_HOST = "http://192.168.1.100:11434"  # 👈 replace with your Ollama host or "http://localhost:11434" if tunneled
+OLLAMA_MODEL = "gemma3:1b"
+
+# Create Ollama client for remote connection
+ollama_client = Client(host=OLLAMA_HOST)
+
+# Flask setup
 app = Flask(__name__)
 CORS(app)
 
+# --- HELPER FUNCTIONS ---
+
 def generate_timestamps(interval_seconds, duration_minutes):
-    """Generates a list of timestamps at the specified interval for the given duration."""
     now = datetime.datetime.now()
-    timestamps = []
-    for i in range(int(duration_minutes * 60 / interval_seconds)):
-        timestamp = now - datetime.timedelta(seconds=i * interval_seconds)
-        timestamps.append(timestamp.strftime('%Y-%m-%d %H:%M:%S'))
+    timestamps = [
+        (now - datetime.timedelta(seconds=i * interval_seconds)).strftime('%Y-%m-%d %H:%M:%S')
+        for i in range(int(duration_minutes * 60 / interval_seconds))
+    ]
     return timestamps
 
-@app.route('/latest')
-def latest():
-    mydb = mysql.connector.connect(
+
+def get_db_connection():
+    return mysql.connector.connect(
         host="localhost",
         user="root",
         password="spring",
         database="weatherdata"
     )
+
+
+# --- ROUTES ---
+
+@app.route('/latest')
+def latest():
+    mydb = get_db_connection()
     mycursor = mydb.cursor()
-    mycursor.execute("SELECT date, time, location, windspeed, winddirection, wtemp, atemp FROM weatherdata ORDER BY date DESC, time DESC LIMIT 1")
+    mycursor.execute("""
+        SELECT date, time, location, windspeed, winddirection, wtemp, atemp
+        FROM weatherdata
+        ORDER BY date DESC, time DESC
+        LIMIT 1
+    """)
     row = mycursor.fetchone()
     mydb.close()
+
     if row:
         data = {
-            "date": str(row[0]),  # Convert datetime to string
-            "time": str(row[1]),  # Convert datetime to string
+            "date": str(row[0]),
+            "time": str(row[1]),
             "location": row[2],
             "windspeed": row[3],
             "winddirection": row[4],
             "wtemp": row[5],
-            "atemp": row[6]
+            "atemp": row[6],
         }
-        print("Latest data:", data)  # Debugging statement
+        print("Latest data:", data)
         return jsonify(data)
-    else:
-        return jsonify({"error": "No data"}), 404
+    return jsonify({"error": "No data"}), 404
+
 
 @app.route('/trend10m')
 def trend10m():
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="spring",
-        database="weatherdata"
-    )
+    mydb = get_db_connection()
     mycursor = mydb.cursor()
     mycursor.execute("""
-        SELECT 
-            date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
         WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 10 MINUTE
         GROUP BY date, time
@@ -62,29 +78,21 @@ def trend10m():
     """)
     rows = mycursor.fetchall()
     mydb.close()
-    data = []
-    for row in rows:
-        data.append({
-            "time": str(row[1]),  # Format time for display
-            "avg_wind": row[2],
-            "max_gust": row[3],
-            "avg_dir": row[4]
-        })
-    print("Trend 10m data:", data)  # Debugging statement
+
+    data = [
+        {"time": str(row[1]), "avg_wind": row[2], "max_gust": row[3], "avg_dir": row[4]}
+        for row in rows
+    ]
+    print("Trend 10m data:", data)
     return jsonify(data)
+
 
 @app.route('/trend1h')
 def trend1h():
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="spring",
-        database="weatherdata"
-    )
+    mydb = get_db_connection()
     mycursor = mydb.cursor()
     mycursor.execute("""
-        SELECT 
-            date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
         FROM weatherdata
         WHERE date = CURDATE() AND time >= CURTIME() - INTERVAL 1 HOUR
         GROUP BY date, time
@@ -92,121 +100,117 @@ def trend1h():
     """)
     rows = mycursor.fetchall()
     mydb.close()
-    data = []
-    for row in rows:
-        data.append({
-            "time": str(row[1]),  # Format time for display
-            "avg_wind": row[2],
-            "max_gust": row[3],
-            "avg_dir": row[4]
-        })
-    print("Trend 1h data:", data)  # Debugging statement
+
+    data = [
+        {"time": str(row[1]), "avg_wind": row[2], "max_gust": row[3], "avg_dir": row[4]}
+        for row in rows
+    ]
+    print("Trend 1h data:", data)
     return jsonify(data)
+
 
 @app.route('/trend24h')
 def trend24h():
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="spring",
-        database="weatherdata"
-    )
+    mydb = get_db_connection()
     mycursor = mydb.cursor()
-
-    query = f"""
-        SELECT 
-            AVG(windspeed) AS avg_wind,
-            MAX(windspeed) AS max_gust,
-            AVG(winddirection) AS avg_dir
+    mycursor.execute("""
+        SELECT AVG(windspeed), MAX(windspeed), AVG(winddirection)
         FROM weatherdata
         WHERE date = CURDATE()
-    """
-
-    mycursor.execute(query)
-    rows = mycursor.fetchall()
+    """)
+    row = mycursor.fetchone()
     mydb.close()
 
     data = []
-    if rows:
+    if row:
         data.append({
-            "avg_wind": rows[0][0],
-            "max_gust": rows[0][1],
-            "avg_dir": rows[0][2]
+            "avg_wind": row[0],
+            "max_gust": row[1],
+            "avg_dir": row[2]
         })
-    print("Trend 1h data:", data)
+    print("Trend 24h data:", data)
     return jsonify(data)
+
 
 @app.route('/get_recent_weather_data', methods=['GET'])
 def get_recent_weather_data():
     try:
-        mydb = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="spring",
-            database="weatherdata"
-        )
+        mydb = get_db_connection()
         mycursor = mydb.cursor()
-
-        query = """
+        mycursor.execute("""
             SELECT date, time, windspeed, winddirection, wtemp, atemp
             FROM weatherdata
             ORDER BY date DESC, time DESC
-            LIMIT 10;  -- Get the 10 most recent records
-        """
-        mycursor.execute(query)
-        data = mycursor.fetchall()
-        mycursor.close()
+            LIMIT 10
+        """)
+        rows = mycursor.fetchall()
         mydb.close()
 
-        # Format the data into a list of dictionaries
-        formatted_data = []
-        for row in data:
-            formatted_data.append({
-                'date': str(row[0]),
-                'time': str(row[1]),
-                'windspeed': row[2],
-                'winddirection': row[3],
-                'wtemp': row[4],
-                'atemp': row[5]
-            })
-
+        formatted_data = [
+            {
+                "date": str(row[0]),
+                "time": str(row[1]),
+                "windspeed": row[2],
+                "winddirection": row[3],
+                "wtemp": row[4],
+                "atemp": row[5],
+            }
+            for row in rows
+        ]
         return jsonify(formatted_data)
-
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
     try:
         data = request.get_json()
-        weather_data = data['weather_data']
+        weather_data = data.get("weather_data", [])
 
-        # Format the data into a string for the prompt
+        if not weather_data:
+            return jsonify({"error": "Missing weather data"}), 400
+
+        # Format weather data as a readable text prompt
         data_string = "\n".join([
-            f"Date: {row['date']}, Time: {row['time']}, Wind Speed: {row['windspeed']} knots, Wind Direction: {row['winddirection']} degrees, Temperature: {row['wtemp']} °C"
+            f"Date: {row['date']}, Time: {row['time']}, "
+            f"Wind Speed: {row['windspeed']} knots, "
+            f"Wind Direction: {row['winddirection']}°, "
+            f"Water Temp: {row['wtemp']}°C, Air Temp: {row['atemp']}°C"
             for row in weather_data
         ])
 
-        # Get the current time
         now = datetime.datetime.now()
-        current_time = now.strftime('%H:%M:%S')
+        current_time = now.strftime("%H:%M:%S")
 
-        # Generate the forecast using Ollama
+        # Send request to remote Ollama
         try:
-            response = ollama.chat(
-                model="gemma3:1b",
+            response = ollama_client.chat(
+                model=OLLAMA_MODEL,
                 messages=[
-                    {'role': 'user', 'content': f"Here is the recent weather data:\n\n{data_string}\n\nPredict the wind speed and direction for each hour of the next 36 hours. Provide the prediction in a table format with columns for 'Hour', 'Wind Speed (knots)', and 'Wind Direction (degrees)'. Today is {datetime.date.today().strftime('%Y-%m-%d')} and time is {current_time}. Do not ask questions or have any fluff. Just give the forecast in words."}
-                ],
+                    {
+                        "role": "user",
+                        "content": (
+                            f"Here is recent weather data:\n\n{data_string}\n\n"
+                            f"Predict wind speed and direction for each hour of the next 36 hours. "
+                            f"Provide the prediction as a table with 'Hour', 'Wind Speed (knots)', "
+                            f"and 'Wind Direction (degrees)'. Today is {datetime.date.today()} "
+                            f"and time is {current_time}. No fluff — only the forecast table."
+                        )
+                    }
+                ]
             )
-            forecast = response['message']['content']
-        except Exception as e:
-            return jsonify({'error': f'Error calling Ollama API: {str(e)}'}), 500
 
-        return jsonify({'forecast': forecast})  # Return as JSON with 'forecast' key
+            forecast = response["message"]["content"]
+        except Exception as e:
+            return jsonify({"error": f"Ollama API error: {str(e)}"}), 500
+
+        return jsonify({"forecast": forecast})
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+
+# --- MAIN ---
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5001)
