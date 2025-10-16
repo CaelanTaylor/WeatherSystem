@@ -6,7 +6,7 @@ from ollama import Client  # use the official Ollama Python client
 
 # --- CONFIGURATION ---
 OLLAMA_HOST = "http://ai.local:11434"
-OLLAMA_MODEL = "deepseek-r1:8b"
+OLLAMA_MODEL = "gemma3:4b"
 
 # Create Ollama client for remote connection
 ollama_client = Client(host=OLLAMA_HOST)
