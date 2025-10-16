@@ -249,4 +249,4 @@ if __name__ == "__main__":
     if not os.path.exists(CONFIG_FILE):
         save_settings(get_default_settings())
         
-    app.run(host="0.0.0.0", port=5001)
+    app.run(host="0.0.0.0", port=5001, debug=True)
