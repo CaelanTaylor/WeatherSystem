@@ -133,7 +133,7 @@ def trend24h():
     return jsonify(data)
 
 
- @app.route('/generate_forecast', methods=['POST'])
+@app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
     try:
         print("✅ Forecast request received")
