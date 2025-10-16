@@ -6,7 +6,7 @@ from ollama import Client  # use the official Ollama Python client
 
 # --- CONFIGURATION ---
 OLLAMA_HOST = "http://ai.local:11434"
-OLLAMA_MODEL = "llama3.1:8b"
+OLLAMA_MODEL = "deepseek-r1:8b"
 
 # Create Ollama client for remote connection
 ollama_client = Client(host=OLLAMA_HOST)
@@ -171,7 +171,7 @@ def generate_forecast():
             model=OLLAMA_MODEL,
             messages=[{
                 "role": "user",
-                "content": f"Hourly wind data:\n{data_string}\nYou are an expert meteorologist. Predict weather for next 48 hours from now including today for each hour. Provide speed in knots and direction in degrees. Analyse recent situation too. Don't have any fluff. Talk as if you are just a forecast on a website. Don't ask questions. The date is {datetime.datetime.now().strftime('%Y-%m-%d')}. The time is {datetime.datetime.now().strftime('%H:%M')}. Don't add notes."
+                "content": f"Hourly wind data:\n{data_string}\nYou are an expert meteorologist. Predict weather for next 48 hours from now including today for every 3 hours. Provide speed in knots and direction in degrees. Analyse recent situation too. Don't have any fluff. Talk as if you are just a forecast on a website. Don't ask questions. The date is {datetime.datetime.now().strftime('%Y-%m-%d')}. The time is {datetime.datetime.now().strftime('%H:%M')}. Don't add notes."
             }]
         )
         forecast_text = response["message"]["content"]
