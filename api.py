@@ -133,26 +133,56 @@ def trend24h():
     return jsonify(data)
 
 
-@app.route('/generate_forecast', methods=['POST'])
+ @app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
     try:
-        print("✅ Endpoint hit")
+        print("✅ Forecast request received")
 
-        # --- Test Ollama connection only ---
+        # --- Connect to DB ---
+        mydb = get_db_connection()
+        mycursor = mydb.cursor()
+        mycursor.execute("""
+            SELECT
+                DATE_FORMAT(TIMESTAMP(date, time), '%Y-%m-%d %H:00:00') AS hourly_timestamp,
+                AVG(windspeed) AS avg_windspeed,
+                MAX(windspeed) AS max_windgust,
+                AVG(winddirection) AS avg_winddirection
+            FROM weatherdata
+            GROUP BY hourly_timestamp
+            ORDER BY hourly_timestamp ASC
+        """)
+        hourly_data = mycursor.fetchall()
+        mydb.close()
+
+        if not hourly_data:
+            return jsonify({"forecast": "No historical data available."})
+
+        # --- Format for Ollama ---
+        data_string = "\n".join([
+            f"Timestamp: {row[0]}, Avg Wind: {row[1]:.2f} knots, Max Gust: {row[2]:.2f} knots, Avg Direction: {row[3]:.2f}°"
+            for row in hourly_data
+        ])
+
+        # --- Call Ollama ---
         response = ollama_client.chat(
             model=OLLAMA_MODEL,
-            messages=[{"role": "user", "content": "Hello, test connection."}]
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"Here is hourly historical wind data ({len(hourly_data)} entries):\n{data_string}\n"
+                    f"Please predict wind conditions for the next 2 days including morning, midday, afternoon, night. "
+                    f"Give wind speed in knots and direction in degrees."
+                )
+            }]
         )
-        print("✅ Ollama response received:", response)
 
-        return jsonify({"forecast": "Ollama works: " + response["message"]["content"]}), 200
+        forecast_text = response["message"]["content"]
+        return jsonify({"forecast": forecast_text})
 
     except Exception as e:
         import traceback
-        print("❌ Exception during Ollama call:")
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-
 
 
 # --- MAIN ---
