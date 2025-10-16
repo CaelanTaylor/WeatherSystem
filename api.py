@@ -136,60 +136,23 @@ def trend24h():
 @app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
     try:
-        # --- Connect to DB ---
-        mydb = get_db_connection()
-        mycursor = mydb.cursor()
+        print("✅ Endpoint hit")
 
-        # --- Aggregate hourly data ---
-        mycursor.execute("""
-            SELECT
-                DATE_FORMAT(TIMESTAMP(date, time), '%Y-%m-%d %H:00:00') AS hourly_timestamp,
-                AVG(windspeed) AS avg_windspeed,
-                MAX(windspeed) AS max_windgust,
-                AVG(winddirection) AS avg_winddirection
-            FROM weatherdata
-            GROUP BY hourly_timestamp
-            ORDER BY hourly_timestamp ASC
-        """)
-        hourly_data = mycursor.fetchall()
-        mydb.close()
+        # --- Test Ollama connection only ---
+        response = ollama_client.chat(
+            model=OLLAMA_MODEL,
+            messages=[{"role": "user", "content": "Hello, test connection."}]
+        )
+        print("✅ Ollama response received:", response)
 
-        if not hourly_data:
-            return jsonify({"error": "No historical data available."}), 404
-
-        # --- Format Data for Ollama ---
-        data_string = "\n".join([
-            f"Timestamp: {row[0]}, Avg Wind Speed: {row[1]:.2f} knots, Max Wind Gust: {row[2]:.2f} knots, Avg Wind Direction: {row[3]:.2f}°"
-            for row in hourly_data
-        ])
-
-        now = datetime.datetime.now()
-        current_time = now.strftime("%H:%M:%S")
-
-        # --- Send to Ollama ---
-        try:
-            response = ollama_client.chat(
-                model=OLLAMA_MODEL,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": (
-                            f"Here is all historical weather data aggregated by the hour ({len(hourly_data)} total entries). Each entry contains the average wind speed, "
-                            f"maximum wind gust, and average wind direction:\n\n{data_string}\n\n"
-                            f"Analyze this hourly averaged data and predict wind conditions for the next two days, including morning, midday, afternoon, and night. "
-                            f"Provide wind speed (knots) and direction (degrees). Today is {datetime.date.today()} and time is {current_time}. Only provide the forecast based on data."
-                        )
-                    }
-                ]
-            )
-            forecast = response["message"]["content"]
-        except Exception as e:
-            return jsonify({"error": f"Ollama API error: {str(e)}"}), 500
-
-        return jsonify({"forecast": forecast})
+        return jsonify({"forecast": "Ollama works: " + response["message"]["content"]}), 200
 
     except Exception as e:
+        import traceback
+        print("❌ Exception during Ollama call:")
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
 
 
 # --- MAIN ---
