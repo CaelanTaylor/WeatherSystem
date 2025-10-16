@@ -136,9 +136,6 @@ def trend24h():
 @app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
     try:
-        print("✅ Forecast request received")
-
-        # --- Connect to DB ---
         mydb = get_db_connection()
         mycursor = mydb.cursor()
         mycursor.execute("""
@@ -154,29 +151,32 @@ def generate_forecast():
         hourly_data = mycursor.fetchall()
         mydb.close()
 
+        print("Raw hourly data from DB:", hourly_data)
+
         if not hourly_data:
             return jsonify({"forecast": "No historical data available."})
 
-        # --- Format for Ollama ---
-        data_string = "\n".join([
-            f"Timestamp: {row[0]}, Avg Wind: {row[1]:.2f} knots, Max Gust: {row[2]:.2f} knots, Avg Direction: {row[3]:.2f}°"
-            for row in hourly_data
-        ])
+        # --- Safe formatting ---
+        data_string = ""
+        for row in hourly_data:
+            ts = row[0] or "unknown"
+            avg_w = row[1] or 0
+            max_g = row[2] or 0
+            avg_d = row[3] or 0
+            data_string += f"Timestamp: {ts}, Avg Wind: {avg_w:.2f}, Max Gust: {max_g:.2f}, Avg Dir: {avg_d:.2f}\n"
 
-        # --- Call Ollama ---
+        print("Formatted data for Ollama:\n", data_string)
+
+        # --- Ollama call ---
         response = ollama_client.chat(
             model=OLLAMA_MODEL,
             messages=[{
                 "role": "user",
-                "content": (
-                    f"Here is hourly historical wind data ({len(hourly_data)} entries):\n{data_string}\n"
-                    f"Please predict wind conditions for the next 2 days including morning, midday, afternoon, night. "
-                    f"Give wind speed in knots and direction in degrees."
-                )
+                "content": f"Hourly wind data:\n{data_string}\nPredict next 2 days."
             }]
         )
-
         forecast_text = response["message"]["content"]
+
         return jsonify({"forecast": forecast_text})
 
     except Exception as e:
