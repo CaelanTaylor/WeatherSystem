@@ -5,15 +5,25 @@
         <title>Settings - WindScout</title>
         <link rel="stylesheet" href="style.css">
         <script>
+            // --- CONFIGURE YOUR API URL HERE ---
+            // Based on your analysis.html, this is the correct URL.
+            const API_BASE_URL = 'http://192.168.192.186:5001'; 
+            // -----------------------------------
+
             // Function to fetch current settings
             async function loadSettings() {
                 try {
-                    const response = await fetch('/settings');
+                    const response = await fetch(`${API_BASE_URL}/settings`);
+                    if (!response.ok) {
+                        throw new Error(`API returned status ${response.status}`);
+                    }
                     const settings = await response.json();
+                    
                     document.getElementById('location').value = settings.location || 'Test Location';
                     document.getElementById('enable_storage').checked = settings.enable_storage === true;
                 } catch (error) {
                     console.error('Error loading settings:', error);
+                    alert('Error loading settings. Check API server and URL.');
                     // Set default values if loading fails
                     document.getElementById('location').value = 'Test Location';
                     document.getElementById('enable_storage').checked = true;
@@ -28,7 +38,7 @@
                 const enable_storage = document.getElementById('enable_storage').checked;
 
                 try {
-                    const response = await fetch('/settings', {
+                    const response = await fetch(`${API_BASE_URL}/settings`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -40,13 +50,14 @@
                     });
 
                     if (response.ok) {
-                        alert('Settings saved successfully! You may need to restart the data receiver (recv.py) for all changes to take effect.');
+                        alert('Settings saved successfully! The data receiver (recv.py) should pick up these changes automatically.');
                     } else {
-                        alert('Failed to save settings.');
+                        const errorData = await response.json().catch(() => ({error: 'Non-JSON response error'}));
+                        alert('Failed to save settings: ' + (errorData.error || response.statusText));
                     }
                 } catch (error) {
                     console.error('Error saving settings:', error);
-                    alert('An error occurred while saving settings.');
+                    alert('An error occurred while saving settings. Check API connectivity.');
                 }
             }
 
