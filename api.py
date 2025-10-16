@@ -151,8 +151,6 @@ def generate_forecast():
         hourly_data = mycursor.fetchall()
         mydb.close()
 
-        print("Raw hourly data from DB:", hourly_data)
-
         if not hourly_data:
             return jsonify({"forecast": "No historical data available."})
 
@@ -160,19 +158,20 @@ def generate_forecast():
         data_string = ""
         for row in hourly_data:
             ts = row[0] or "unknown"
-            avg_w = row[1] or 0
-            max_g = row[2] or 0
-            avg_d = row[3] or 0
+            try:
+                avg_w = float(row[1]) if row[1] is not None else 0.0
+                max_g = float(row[2]) if row[2] is not None else 0.0
+                avg_d = float(row[3]) if row[3] is not None else 0.0
+            except ValueError:
+                avg_w, max_g, avg_d = 0.0, 0.0, 0.0
             data_string += f"Timestamp: {ts}, Avg Wind: {avg_w:.2f}, Max Gust: {max_g:.2f}, Avg Dir: {avg_d:.2f}\n"
-
-        print("Formatted data for Ollama:\n", data_string)
 
         # --- Ollama call ---
         response = ollama_client.chat(
             model=OLLAMA_MODEL,
             messages=[{
                 "role": "user",
-                "content": f"Hourly wind data:\n{data_string}\nPredict next 2 days."
+                "content": f"Hourly wind data:\n{data_string}\nPredict next 2 days including morning, midday, afternoon, night. Provide speed in knots and direction in degrees."
             }]
         )
         forecast_text = response["message"]["content"]
