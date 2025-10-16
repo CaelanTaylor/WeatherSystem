@@ -5,7 +5,7 @@
     <title>Weather Analysis - WindScout</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body >
+<body>
     <div class="navbar">
         <div class="logo">
             <h1>WindScout</h1>
@@ -15,17 +15,20 @@
                 <li><a href="index.html">LiveWeather</a></li>
                 <li><a href="10mtrend.html">10 Minute Trend</a></li>
                 <li><a href="1htrend.html">1 Hour Trend</a></li>
-                <li><a href="analysis.html"><b >Analysis</b></a></li>
+                <li><a href="analysis.html"><b>Analysis</b></a></li>
                 <li><a href="settings.html">Settings</a></li>
             </ul>
         </div>
     </div>
+
     <div class="content">
         <div class="title">
             <h1>Weather Analysis</h1>
             <div class="line"></div>
         </div>
+
         <button class="menu-toggle" onclick="updateForecast()">Update Forecast</button>
+
         <div id="forecast-display">
             <p>This section will display weather forecasts and analysis based on recent data.</p>
             <div id="loading-indicator" style="display: none;">
@@ -33,61 +36,54 @@
             </div>
         </div>
     </div>
+
     <script>
         function updateForecast() {
             const forecastDisplay = document.getElementById('forecast-display');
             const loadingIndicator = document.getElementById('loading-indicator');
 
-            // Show a loading message immediately
+            // Show loading message
             forecastDisplay.innerHTML = `<p>Generating forecast...</p>`;
             loadingIndicator.style.display = 'block';
 
-            // Step 1: Fetch recent weather data from your API
-            fetch('http://192.168.192.186:5001/get_recent_weather_data')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Network response was not ok: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Check if the database returned any data
-                    if (data && data.length > 0) {
-                        // Step 2: If data exists, send it to the generate_forecast endpoint
-                        return fetch('http://192.168.192.186:5001/generate_forecast', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ weather_data: data })
-                        });
-                    } else {
-                        // If no data, stop here and show a message
-                        throw new Error('No recent weather data available to generate a forecast.');
-                    }
-                })
+            // Directly call Flask API to generate forecast
+            fetch('http://192.168.192.186:5001/generate_forecast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`Forecast generation failed: ${response.statusText}`);
                     }
                     return response.json();
                 })
-                .then(forecastData => {
-                    // Step 3: Display the forecast from Ollama
-                    // Using <pre> tag to preserve the table formatting from the AI
-                    forecastDisplay.innerHTML = `<pre style="text-align: center;">${forecastData.forecast}</pre>`;
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Display the forecast neatly
+                    forecastDisplay.innerHTML = `<pre style="
+                        white-space: pre-wrap;
+                        text-align: center;
+                        font-size: 1.1em;
+                        background: #f9f9f9;
+                        padding: 15px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+                    ">${data.forecast}</pre>`;
                 })
                 .catch(error => {
-                    // Catch any error from the entire chain and display it
-                    console.error('Error during forecast process:', error);
+                    console.error('Error:', error);
                     forecastDisplay.innerHTML = `<p>An error occurred: ${error.message}</p>`;
                 })
                 .finally(() => {
-                    // Hide the loading indicator regardless of success or failure
                     loadingIndicator.style.display = 'none';
                 });
         }
+
+        // Auto-run forecast on page load
         updateForecast();
     </script>
-</body >
-</html >
+</body>
+</html>
