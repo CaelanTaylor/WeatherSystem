@@ -171,7 +171,7 @@ def generate_forecast():
             model=OLLAMA_MODEL,
             messages=[{
                 "role": "user",
-                "content": f"Hourly wind data:\n{data_string}\nPredict next 2 days for each morning, midday, afternoon, night. Provide speed in knots and direction in degrees. Analyse recent situation too. Don't have any fluff. Talk as if you are just a forecast on a website. Don't ask questions. Winds over 30 knots are unsailable."
+                "content": f"Hourly wind data:\n{data_string}\nPredict next 2 days for each morning, midday, afternoon, night. Provide speed in knots and direction in degrees. Analyse recent situation too. Don't have any fluff. Talk as if you are just a forecast on a website. Don't ask questions. Winds over 30 knots are unsailable. The date is {datetime.datetime.now().strftime('%Y-%m-%d')}. The time is {datetime.datetime.now().strftime('%H:%M')}."
             }]
         )
         forecast_text = response["message"]["content"]
