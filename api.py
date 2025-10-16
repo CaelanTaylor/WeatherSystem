@@ -2,11 +2,15 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 import datetime
-from ollama import Client  # use the official Ollama Python client
+from ollama import Client
+import json  # Added for config management
+import os    # Added for file path checks
+import traceback
 
 # --- CONFIGURATION ---
 OLLAMA_HOST = "http://ai.local:11434"
 OLLAMA_MODEL = "gemma3:4b"
+CONFIG_FILE = "config.json" # New config file
 
 # Create Ollama client for remote connection
 ollama_client = Client(host=OLLAMA_HOST)
@@ -16,7 +20,37 @@ app = Flask(__name__)
 CORS(app)
 
 
-# --- HELPER FUNCTIONS ---
+# --- CONFIG HELPER FUNCTIONS ---
+
+def get_default_settings():
+    return {
+        "location": "Test Location",
+        "enable_storage": True
+    }
+
+def load_settings():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                return json.load(f)
+        except (IOError, json.JSONDecodeError):
+            print(f"Error reading or decoding {CONFIG_FILE}. Using default settings.")
+            return get_default_settings()
+    else:
+        # If file doesn't exist, return defaults
+        return get_default_settings()
+
+def save_settings(settings):
+    try:
+        with open(CONFIG_FILE, 'w') as f:
+            json.dump(settings, f, indent=4)
+        return True
+    except IOError as e:
+        print(f"Error writing to {CONFIG_FILE}: {e}")
+        return False
+
+
+# --- DB & GENERAL HELPER FUNCTIONS ---
 
 def generate_timestamps(interval_seconds, duration_minutes):
     now = datetime.datetime.now()
@@ -37,6 +71,32 @@ def get_db_connection():
 
 
 # --- ROUTES ---
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings_route():
+    """Handles loading and saving application settings."""
+    if request.method == 'GET':
+        # Load and return current settings
+        return jsonify(load_settings())
+    
+    elif request.method == 'POST':
+        # Save new settings
+        data = request.json
+        
+        # Validate input
+        if not isinstance(data, dict) or 'location' not in data or not isinstance(data.get('enable_storage'), bool):
+            return jsonify({"error": "Invalid request payload. Must include 'location' (string) and 'enable_storage' (boolean)."}), 400
+        
+        settings_to_save = {
+            "location": str(data['location']).strip(),
+            "enable_storage": data['enable_storage']
+        }
+
+        if save_settings(settings_to_save):
+            return jsonify({"message": "Settings saved"}), 200
+        else:
+            return jsonify({"error": "Could not save settings due to file system error"}), 500
+
 
 @app.route('/latest')
 def latest():
@@ -171,7 +231,7 @@ def generate_forecast():
             model=OLLAMA_MODEL,
             messages=[{
                 "role": "user",
-                "content": f"Hourly wind data:\n{data_string}\nYou are an expert meteorologist known for exceptional accuracy. Predict weather for next 2 days from now including today for every 3 hours. Provide speed in knots and direction in degrees. Analyse recent situation too. Don't have any fluff. Talk as if you are just a forecast on a website. Don't ask questions. The date is {datetime.datetime.now().strftime('%Y-%m-%d')}. The time is {datetime.datetime.now().strftime('%H:%M')}. Don't add notes."
+                "content": f"Hourly wind data:\n{data_string}\nYou are an expert meteorologist. Predict weather for next 2 days from now including today for every 3 hours. Provide speed in knots and direction in degrees. Analyse recent situation too. Don't have any fluff. Talk as if you are just a forecast on a website. Don't ask questions. The date is {datetime.datetime.now().strftime('%Y-%m-%d')}. The time is {datetime.datetime.now().strftime('%H:%M')}. Don't add notes."
             }]
         )
         forecast_text = response["message"]["content"]
@@ -179,11 +239,14 @@ def generate_forecast():
         return jsonify({"forecast": forecast_text})
 
     except Exception as e:
-        import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 
 # --- MAIN ---
 if __name__ == "__main__":
+    # Ensure a default config file exists on startup if it doesn't
+    if not os.path.exists(CONFIG_FILE):
+        save_settings(get_default_settings())
+        
     app.run(host="0.0.0.0", port=5001)
