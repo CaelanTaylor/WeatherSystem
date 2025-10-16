@@ -25,83 +25,116 @@
             <div class="title">
                 <h1>LiveWeather</h1>
                 <div class="line"></div>
+                <h2 id="current-location" style="text-align: center; color: #00bcd4; margin-top: -15px;"></h2> 
             </div>
-            <!-- Example dashboard markup for index.html -->
             <div class="dashboard">
                 <div class="weather-item">
                     <div class="label">WIND SPEED</div>
                     <div class="circle-gauge">
-                        <svg width="100" height="100">
+                        <svg width="100" height="100" viewBox="0 0 100 100">
                             <circle cx="50" cy="50" r="40" stroke="#eee" stroke-width="6" fill="none"/>
-                            <circle id="windspeed-ring" cx="50" cy="50" r="40" stroke="#f00" stroke-width="6" fill="none"
-                                stroke-dasharray="251.2" stroke-dashoffset="251.2" style="transition:stroke-dashoffset 0.8s;"/>
+                            <circle id="windspeed-ring" cx="50" cy="50" r="40" stroke="#f00" stroke-width="6" fill="none" stroke-dasharray="0 251.327" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+                            <div class="speed-value"><span id="windspeed">0.0</span><div class="unit">knots</div></div>
                         </svg>
-                        <div class="gauge-value" id="windspeed">--</div>
                     </div>
-                    <div class="unit">Knots</div>
                 </div>
+                
                 <div class="weather-item">
                     <div class="label">WIND DIRECTION</div>
                     <div class="compass-gauge">
-                        <svg width="100" height="100">
-                            <circle cx="50" cy="50" r="40" stroke="#000" stroke-width="6" fill="none"/>
-                            <polygon id="wind-arrow" points="50,22 46,50 54,50" fill="#f00"/>
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="40" stroke="#eee" stroke-width="1" fill="#fff"/>
+                            <text x="50" y="15" text-anchor="middle" font-size="10" fill="#f00">N</text>
+                            <polygon id="wind-arrow" points="50,10 45,30 55,30" fill="#00bcd4" stroke="#00bcd4" stroke-width="1" transform="rotate(0 50 50)"/>
+                            <circle cx="50" cy="50" r="5" fill="#00bcd4"/>
+                            <text id="winddirection" x="50" y="70" text-anchor="middle" font-size="1.2rem" fill="#222">0°</text>
                         </svg>
-                        <div class="gauge-value" id="winddirection">--°</div>
+                        <div id="winddir-label" style="font-size: 0.9rem; color: #666; margin-top: 5px;">North</div>
                     </div>
-                    <div class="unit" id="winddir-label">--</div>
                 </div>
-                <div class="updated">
-                    Last Updated: <span id="lastupdated">--</span>
+                
+                <div class="weather-item">
+                    <div class="label">WATER TEMP</div>
+                    <div class="gauge-value"><span id="wtemp">0.0</span><div class="unit">°C</div></div>
                 </div>
+                
+                <div class="weather-item">
+                    <div class="label">AIR TEMP</div>
+                    <div class="gauge-value"><span id="atemp">0.0</span><div class="unit">°C</div></div>
+                </div>
+                
+                <div class="weather-item" style="flex-basis: 100%; margin-top: 20px;">
+                    <div class="label">Last Updated</div>
+                    <div id="lastupdated" style="font-size: 1.2rem; font-weight: 500;">--:--:--</div>
+                </div>
+
             </div>
         </div>
         <script>
+        const API_BASE_URL = 'http://192.168.192.186:5001'; 
+
+        function toggleMenu() {
+            document.querySelector('.navitems').classList.toggle('open');
+        }
+
         async function updateWeather() {
             try {
-                const res = await fetch('http://192.168.192.186:5001/latest');
-                if (!res.ok) {
-                    throw new Error(`HTTP error! Status: ${res.status}`);
+                // Fetch latest data
+                const response = await fetch(`${API_BASE_URL}/latest`);
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('lastupdated').textContent = `Error: ${data.error}`;
+                    return;
                 }
-                const data = await res.json();
+                
+                // Display Location
+                document.getElementById('current-location').textContent = data.location;
 
                 // Wind Speed
                 const windspeed = parseFloat(data.windspeed) || 0;
-                document.getElementById('windspeed').textContent = windspeed;
-                // Animate wind speed ring (max 40 knots for full circle)
-                const maxKnots = 40;
-                const percent = Math.min(windspeed / maxKnots, 1);
-                const offset = 251.2 * (1 - percent);
+                document.getElementById('windspeed').textContent = windspeed.toFixed(1);
+                
+                // Max speed for gauge (e.g., 30 knots)
+                const maxSpeed = 30; 
+                const percentage = Math.min(1, windspeed / maxSpeed);
+                const circumference = 2 * Math.PI * 40;
+                const offset = circumference * (1 - percentage);
+                
                 const ring = document.getElementById('windspeed-ring');
+                ring.setAttribute('stroke-dasharray', `${circumference} ${circumference}`);
                 ring.setAttribute('stroke-dashoffset', offset);
                 ring.setAttribute('transform', 'rotate(-90 50 50)');
 
                 // Wind Direction
                 const winddir = parseFloat(data.winddirection) || 0;
                 document.getElementById('winddirection').textContent = `${winddir.toFixed(0)}\u00B0`;
-                // Smoothly rotate wind arrow (triangle)
-                document.getElementById('wind-arrow').style.transition = "transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)";
-                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir} 50 50)`);
+                
+                const arrow = document.getElementById('wind-arrow');
+                // Use a standard transition defined in CSS for smooth movement
+                arrow.setAttribute('transform', `rotate(${winddir} 50 50)`);
+
                 // Wind Dir Label
                 const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
                 const dirIndex = Math.round(winddir / 45) % 8;
                 document.getElementById('winddir-label').textContent = dirs[dirIndex];
+
+                // Temperature
+                document.getElementById('wtemp').textContent = (parseFloat(data.wtemp) || 0).toFixed(1);
+                document.getElementById('atemp').textContent = (parseFloat(data.atemp) || 0).toFixed(1);
 
                 // Last Updated
                 document.getElementById('lastupdated').textContent = `${data.time} ${data.date}`;
 
             } catch (error) {
                 console.error("Error fetching data:", error);
-                // Optionally display an error message on the page
                 document.getElementById('lastupdated').textContent = "Error loading data";
+                document.getElementById('current-location').textContent = "Connection Error";
             }
         }
+        
         updateWeather();
         setInterval(updateWeather, 1000);
-
-        function toggleMenu() {
-            document.querySelector('.navitems').classList.toggle('open');
-        }
         </script>
     </body>
 </html>

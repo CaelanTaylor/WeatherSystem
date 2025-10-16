@@ -19,41 +19,58 @@
                 <li><a href="settings.html">Settings</a></li>
             </ul>
         </div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     </div>
 
     <div class="content">
         <div class="title">
             <h1>Weather Analysis</h1>
             <div class="line"></div>
+            <h2 id="current-location" style="text-align: center; color: #00bcd4; margin-top: -15px;"></h2>
         </div>
 
-        <button class="menu-toggle" onclick="updateForecast()">Update Forecast</button>
-
-        <div id="forecast-display">
-            <p>This section will display weather forecasts and analysis based on recent data.</p>
-            <div id="loading-indicator" style="display: none;">
-                <p>Generating forecast...</p>
+        <div class="forecast-container">
+            <button onclick="updateForecast()">Generate New Forecast</button>
+            <div id="forecast-display">
+                <p>Click 'Generate New Forecast' to analyze historical data and get a prediction.</p>
+                <div id="loading-indicator" style="display: none;">
+                    <p>Generating forecast...</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        const API_BASE_URL = 'http://192.168.192.186:5001'; 
+
+        function toggleMenu() {
+            document.querySelector('.navitems').classList.toggle('open');
+        }
+        
+        async function fetchLocation() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/latest`);
+                const data = await res.json();
+                document.getElementById('current-location').textContent = data.location || "Loading...";
+            } catch (e) {
+                document.getElementById('current-location').textContent = "Connection Error";
+            }
+        }
+
         function updateForecast() {
             const forecastDisplay = document.getElementById('forecast-display');
             const loadingIndicator = document.getElementById('loading-indicator');
 
-            // Show loading message
             forecastDisplay.innerHTML = `<p>Generating forecast...</p>`;
             loadingIndicator.style.display = 'block';
 
-            // Directly call Flask API to generate forecast
-            fetch('http://192.168.192.186:5001/generate_forecast', {
+            fetch(`${API_BASE_URL}/generate_forecast`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`Forecast generation failed: ${response.statusText}`);
+                        return response.json().then(err => { throw new Error(err.error || response.statusText); });
                     }
                     return response.json();
                 })
@@ -62,16 +79,7 @@
                         throw new Error(data.error);
                     }
 
-                    // Display the forecast neatly
-                    forecastDisplay.innerHTML = `<pre style="
-                        white-space: pre-wrap;
-                        text-align: center;
-                        font-size: 1.1em;
-                        background: #f9f9f9;
-                        padding: 15px;
-                        border-radius: 10px;
-                        box-shadow: 0 0 5px rgba(0,0,0,0.1);
-                    ">${data.forecast}</pre>`;
+                    forecastDisplay.innerHTML = `<pre>${data.forecast}</pre>`;
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -82,8 +90,8 @@
                 });
         }
 
-        // Auto-run forecast on page load
-        updateForecast();
+        fetchLocation();
+        updateForecast(); // Auto-run forecast on page load
     </script>
 </body>
 </html>
