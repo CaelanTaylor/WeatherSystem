@@ -1,40 +1,37 @@
-html {
-    width: 100vw;
-    font-size: 16px; /* Base for rem units */
+html{
+    width:100vw;
+
 }
 
-body {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    font-family: "outfit", sans-serif;
-    padding-top: 60px; /* Space for fixed navbar */
-    background-color: #f4f7f6; /* Light background */
+body{
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow-x:hidden;
 }
 
-/* Custom Font */
-@font-face {
-    font-family: "outfit";
-    src: url("fonts/Outfit.ttf");
-}
-
-/* --- Navbar and Header --- */
 .navbar {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 56px;
+    min-height: 56px;
     background-color: black;
     color: white;
     padding: 0 2vw;
+    font-family: outfit;
     z-index: 100;
     box-sizing: border-box;
+}
+
+@font-face {
+    font-family: "outfit";
+    src: url("fonts/Outfit.ttf");
 }
 
 .navbar h1 {
@@ -47,119 +44,336 @@ body {
     flex: 0 0 auto;
 }
 
-.navitems {
-    display: flex;
-    flex: 1 1 auto;
+.navitems{
+    display:flex;
+    flex: 1 1 0;
     justify-content: flex-end;
-    margin-left: auto;
-    /* Default: desktop view */
+    margin-left:auto;
+    min-width:0;
 }
 
-.navitems ul {
+.navitems ul{
     display: flex;
     flex-direction: row;
-    gap: 1.5rem;
+    gap: 2vw;
     align-items: center;
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.navitems a {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-    padding: 0.5rem 0.75rem;
-    transition: color 0.3s;
-    white-space: nowrap;
+.navitems ul li a{
+    text-decoration:none;
+    color:white;
+    font-size:clamp(1rem, 2vw, 1.2rem);
+    padding:0.3em 0.7em;
+    border-radius:0.3em;
+    transition: background 0.2s;
 }
 
-.navitems a:hover, .navitems b a {
-    color: #00bcd4; /* Accent color for active/hover */
+.navitems ul li a:hover{
+    text-decoration:underline;
+    background:rgba(255,255,255,0.08);
 }
 
+/* Hamburger button styling */
 .menu-toggle {
-    display: none; /* Hide on desktop */
+    display: none;
     background: none;
     border: none;
     color: white;
-    font-size: 1.5rem;
+    font-size: 2rem;
     cursor: pointer;
-    padding: 0.5rem;
+    margin-right: 1vw;
+    z-index: 101;
 }
 
-/* --- Content and Title --- */
-.content {
-    padding: 2rem 5vw;
-    max-width: 1400px;
-    margin: 0 auto;
+/* Responsive Navbar */
+@media (max-width: 900px) {
+    .navbar {
+        flex-direction: column;
+        align-items: stretch;
+        min-height: 44px;
+        padding: 0.5em 1vw;
+    }
+    .logo {
+        margin-bottom: 0.5em;
+    }
+    .navitems {
+        justify-content: flex-end;
+        width: 100vw;
+        margin: 0;
+        display: none;
+        flex-direction: column;
+        background: black;
+        position: absolute;
+        top: 56px;
+        right: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 100;
+    }
+    .navitems.open {
+        display: flex;
+    }
+    .navitems ul {
+        flex-direction: column;
+        gap: 0.5em;
+        align-items: flex-end;
+        width: 100%;
+        margin: 0;
+        padding: 1em 2em;
+    }
+    .menu-toggle {
+        display: block;
+        margin-left: auto;
+    }
+}
+
+/* Even smaller screens */
+@media (max-width: 600px) {
+    .navbar h1 {
+        font-size: clamp(0.9rem, 6vw, 1.1rem);
+    }
+    .navitems ul li a {
+        font-size: clamp(0.9rem, 5vw, 1rem);
+    }
+}
+
+.content{
+    position:relative;
+    top:7vh;
+    width:100%;
+    height:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color: black;
+    font-family: outfit;
+}
+
+.title h1{
+    font-size:4rem;
+    margin:0;
+    text-align:center; 
+}
+
+.title .line{
+    width:60vw;
+    height:2px;
+    background-color:black;
+    margin-top:10px;
+}
+
+/* Dashboard styling */
+.weather-item {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem 2.5rem;
+    text-align: center;
+    min-width: 140px;
+    flex: 1 1 220px;
+    max-width: 320px;
     box-sizing: border-box;
+    margin: 0.5rem;
+    position: relative;
 }
 
-.title h1 {
-    font-size: clamp(1.5rem, 4vw, 3rem);
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.line {
-    width: 100%;
-    height: 2px;
-    background-color: #00bcd4;
-    margin-bottom: 2rem;
-}
-
-/* --- Dashboard Layout (Key to Responsiveness) --- */
 .dashboard {
     display: flex;
-    flex-wrap: wrap; /* Allows items to wrap onto the next line */
-    gap: 20px;
-    justify-content: center; /* Center items when they wrap */
-    padding: 1rem 0;
-}
-
-.weather-item, .settings-form, .forecast-container {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    padding: 20px;
-    flex-grow: 1; /* Allows item to grow */
-    flex-basis: 300px; /* Minimum width before wrapping/growing */
-    min-width: 250px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-/* --- Dashboard Specifics for LiveWeather --- */
-.weather-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-top: 3rem;
+    font-family: 'outfit', Arial, sans-serif;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .weather-item .label {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    font-weight: 500;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
 }
 
-/* Circle Gauge styles */
-.circle-gauge {
+.weather-item .value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 0.5rem;
+}
+
+.weather-item .unit {
+    font-size: 1rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.updated {
+    width: 100%;
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    font-family: 'outfit', Arial, sans-serif;
+    color: #222;
+}
+
+/* Responsive Navbar */
+@media (max-width: 900px) {
+    .navbar {
+        flex-direction: column;
+        align-items: stretch;
+        min-height: 44px;
+        padding: 0.5em 1vw;
+    }
+    .logo {
+        margin-bottom: 0.5em;
+    }
+    .navitems {
+        justify-content: flex-end;
+        width: 100vw;
+        margin: 0;
+        display: none;
+        flex-direction: column;
+        background: black;
+        position: absolute;
+        top: 56px;
+        right: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 100;
+    }
+    .navitems.open {
+        display: flex;
+    }
+    .navitems ul {
+        flex-direction: column;
+        gap: 0.5em;
+        align-items: flex-end;
+        width: 100%;
+        margin: 0;
+        padding: 1em 2em;
+    }
+}
+
+/* Even smaller screens */
+@media (max-width: 600px) {
+    .navbar h1 {
+        font-size: clamp(0.9rem, 6vw, 1.1rem);
+    }
+    .navitems ul li a {
+        font-size: clamp(0.9rem, 5vw, 1rem);
+    }
+}
+
+.circle-gauge, .compass-gauge {
     position: relative;
     width: 100px;
     height: 100px;
     margin: 0 auto 0.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.circle-gauge svg {
+.circle-gauge .gauge-value,
+.compass-gauge .gauge-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #222;
+    text-align: center;
+    white-space: nowrap;
+    width: auto;
+    max-width: 80px;
+    word-break: break-word;
+}
+
+.thermometer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+.thermo-bar {
+    width: 16px;
+    height: 70px;
+    background: #eee;
+    border-radius: 8px;
+    position: relative;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+.thermo-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #f00;
+    border-radius: 8px;
+    height: 0;
+    transition: height 0.5s;
+}
+.thermometer .gauge-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #222;
+    margin-top: 0.2rem;
+}
+
+@media (max-width: 700px) {
+    .dashboard {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .weather-item {
+        max-width: 90vw;
+        padding: 1.2rem 0.5rem;
+    }
+    .circle-gauge, .compass-gauge {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+/* Wind Speed Gauge */
+.wind-speed-gauge {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem 2.5rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.wind-speed-gauge svg {
     width: 100px;
     height: 100px;
 }
 
-.speed-value, .gauge-value {
+.wind-speed-gauge .gauge-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #222;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+}
+
+.wind-speed-gauge .unit {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* Wind Speed Value */
+.speed-value {
     font-size: 1.7rem;
     font-weight: bold;
     color: #222;
@@ -171,12 +385,7 @@ body {
     text-align: center;
 }
 
-.unit {
-    font-size: 1rem;
-    color: #666;
-}
-
-/* Compass Gauge (Wind Direction) */
+/* Compass Gauge */
 .compass-gauge {
     position: relative;
     width: 100px;
@@ -184,149 +393,39 @@ body {
     margin: 0 auto 0.5rem auto;
 }
 
-/* Direction Arrow */
+.compass-gauge svg {
+    width: 100px;
+    height: 100px;
+}
+
+.compass-gauge .gauge-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: #222;
+    width: 60px;
+    text-align: center;
+}
+
+/* Compass Value */
+.compass-value {
+    font-size: 1.1rem;
+    color: #222;
+    position: absolute;
+    top: 78%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    text-align: center;
+}
+
 #wind-arrow {
-    transform-origin: 50px 50px;
     transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
 }
 
-/* --- Settings Form Styles --- */
-.settings-form {
-    max-width: 600px;
-    margin: 20px auto;
-    flex-basis: 100%; /* Make settings form take full width in the dashboard */
-    text-align: left;
-}
-
-.settings-form h2 {
-    color: #00bcd4;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-    margin-top: 0;
-}
-
-.settings-form label {
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #333;
-}
-
-.settings-form input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 1rem;
-}
-
-.settings-form input[type="checkbox"] {
-    margin-right: 10px;
-    transform: scale(1.2);
-}
-
-.settings-form button {
-    background-color: #00bcd4;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: 20px;
-    transition: background-color 0.3s;
-}
-
-.settings-form button:hover {
-    background-color: #008fa0;
-}
-
-
-/* --- Analysis (Forecast) Styles --- */
-#forecast-display {
-    text-align: center;
-    padding-top: 20px;
-}
-
-#forecast-display pre {
-    white-space: pre-wrap;
-    text-align: left; /* Keep forecast text left-aligned for readability */
-    font-size: 1em;
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    margin: 0 auto;
-    max-width: 900px;
-}
-
-/* --- Media Queries for Mobile Responsiveness --- */
-
-@media (max-width: 768px) {
-    
-    /* Toggle Menu for Mobile */
-    .menu-toggle {
-        display: block;
-    }
-
-    .navitems {
-        /* Mobile menu: Hidden by default, full screen when open */
-        position: absolute;
-        top: 56px; /* Below the navbar */
-        left: 0;
-        width: 100vw;
-        height: 0; /* Starts collapsed */
-        background-color: rgba(0, 0, 0, 0.95);
-        transition: height 0.3s ease-in-out;
-        overflow: hidden;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-    }
-    
-    .navitems.open {
-        height: calc(100vh - 56px); /* Full height of the viewport minus navbar height */
-        padding: 10px 0;
-    }
-
-    .navitems ul {
-        flex-direction: column;
-        gap: 0;
-        width: 100%;
-        text-align: center;
-    }
-
-    .navitems li {
-        width: 100%;
-        padding: 10px 0;
-    }
-    
-    .navitems a {
-        display: block;
-        padding: 15px 0;
-        border-bottom: 1px solid #333;
-    }
-
-    /* Adjust content padding */
-    .content {
-        padding: 1rem 3vw;
-    }
-
-    /* Force dashboard items to stack */
-    .weather-item {
-        flex-basis: 100%;
-    }
-    
-    /* Make charts stack vertically on small screens */
-    .dashboard > div {
-        flex-basis: 100%;
-    }
-    
-    /* Ensure charts themselves are responsive */
-    canvas {
-        width: 100% !important;
-        height: auto !important;
-    }
+.navitems li.active a {
+    font-weight: bold;
 }

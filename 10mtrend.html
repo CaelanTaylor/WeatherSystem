@@ -26,23 +26,22 @@
             <div class="title">
                 <h1>10 Minute Trend</h1>
                 <div class="line"></div>
-                <h2 id="current-location" style="text-align: center; color: #00bcd4; margin-top: -15px;"></h2>
             </div>
         </div>
+        <br>
+        <br>
         <div class="dashboard">
             <div>
-                <canvas id="avgWindChart"></canvas>
+                <canvas id="avgWindChart" width="400" height="200"></canvas>
             </div>
             <div>
-                <canvas id="gustChart"></canvas>
+                <canvas id="gustChart" width="400" height="200"></canvas>
             </div>
             <div>
-                <canvas id="dirChart"></canvas>
+                <canvas id="dirChart" width="400" height="200"></canvas>
             </div>
         </div>
         <script>
-            const API_BASE_URL = 'http://192.168.192.186:5001'; 
-
             function toggleMenu() {
                 document.querySelector('.navitems').classList.toggle('open');
             }
@@ -50,35 +49,26 @@
             let avgWindChart, gustChart, dirChart;
 
             async function drawTrendGraphs() {
-                const res = await fetch(`${API_BASE_URL}/latest`);
-                const latestData = await res.json();
-                document.getElementById('current-location').textContent = latestData.location || "Loading...";
-
-                const trendRes = await fetch(`${API_BASE_URL}/trend10m`);
-                const data = await trendRes.json();
-                
-                // If data is empty due to filtering, exit
-                if (!data || data.length === 0) {
-                    return;
-                }
-
+                const res = await fetch('http://192.168.192.186:5001/trend10m');
+                const data = await res.json();
                 const labels = data.map(d => d.time.slice(-8));
                 const avgWind = data.map(d => d.avg_wind);
                 const maxGust = data.map(d => d.max_gust);
                 const avgDir = data.map(d => d.avg_dir);
 
+                // Calculate dynamic min and max for wind charts
                 const allWind = avgWind.concat(maxGust);
                 let minWind = Math.min(...allWind);
                 let maxWind = Math.max(...allWind);
 
+                // Add padding for better visuals
                 minWind = Math.floor(minWind - 2);
                 maxWind = Math.ceil(maxWind + 2);
 
+                // Ensure min is not negative
                 if (minWind < 0) minWind = 0;
 
                 const windOptions = {
-                    responsive: true,
-                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             min: minWind,
@@ -144,10 +134,6 @@
                                 borderColor: 'green',
                                 fill: false
                             }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false
                         }
                     });
                 } else {
@@ -158,7 +144,7 @@
             }
 
             drawTrendGraphs();
-            setInterval(drawTrendGraphs, 5000); 
+            setInterval(drawTrendGraphs, 5000); // Auto update every 15 seconds
         </script>
     </body>
 </html>

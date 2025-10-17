@@ -5,12 +5,12 @@
         <title>Settings - WindScout</title>
         <link rel="stylesheet" href="style.css">
         <script>
+            // --- CONFIGURE YOUR API URL HERE ---
+            // Based on your analysis.html, this is the correct URL.
             const API_BASE_URL = 'http://192.168.192.186:5001'; 
+            // -----------------------------------
 
-            function toggleMenu() {
-                document.querySelector('.navitems').classList.toggle('open');
-            }
-
+            // Function to fetch current settings
             async function loadSettings() {
                 try {
                     const response = await fetch(`${API_BASE_URL}/settings`);
@@ -24,13 +24,15 @@
                 } catch (error) {
                     console.error('Error loading settings:', error);
                     alert('Error loading settings. Check API server and URL.');
+                    // Set default values if loading fails
                     document.getElementById('location').value = 'Test Location';
                     document.getElementById('enable_storage').checked = true;
                 }
             }
 
+            // Function to save settings
             async function saveSettings(event) {
-                event.preventDefault(); 
+                event.preventDefault(); // Prevent default form submission
 
                 const location = document.getElementById('location').value;
                 const enable_storage = document.getElementById('enable_storage').checked;
@@ -59,6 +61,7 @@
                 }
             }
 
+            // Load settings when the page loads
             window.onload = loadSettings;
         </script>
     </head>
@@ -76,7 +79,6 @@
                     <li><a href="settings.html"><b>Settings</b></a></li>
                 </ul>
             </div>
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         </div>
         <div class="content">
             <div class="title">
