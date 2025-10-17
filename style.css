@@ -9,7 +9,7 @@ body {
     padding: 0;
     overflow-x: hidden;
     font-family: "outfit", sans-serif;
-    padding-top: 56px; /* Space for fixed navbar (56px tall) */
+    padding-top: 60px; /* Space for fixed navbar */
     background-color: #f4f7f6; /* Light background */
 }
 
@@ -29,7 +29,7 @@ body {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 56px; /* FIXED HEIGHT */
+    height: 56px;
     background-color: black;
     color: white;
     padding: 0 2vw;
@@ -118,7 +118,7 @@ body {
     padding: 1rem 0;
 }
 
-.weather-item, .settings-form, .forecast-container, .dashboard > div {
+.weather-item, .settings-form, .forecast-container {
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -272,29 +272,23 @@ body {
     }
 
     .navitems {
-        /* FIX: POSITION ABSOLUTE so it doesn't affect the height of .navbar */
-        position: absolute; 
-        top: 56px; /* Position right below the fixed navbar */
+        /* Mobile menu: Hidden by default, full screen when open */
+        position: absolute;
+        top: 56px; /* Below the navbar */
         left: 0;
         width: 100vw;
-        
-        /* Use max-height to control open/close state */
-        max-height: 0; 
-        
+        height: 0; /* Starts collapsed */
         background-color: rgba(0, 0, 0, 0.95);
-        transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-        overflow-y: auto; /* Use auto for long menus */
+        transition: height 0.3s ease-in-out;
+        overflow: hidden;
         flex-direction: column;
         justify-content: flex-start;
         align-items: center;
-        padding: 0; /* Start with no padding */
-        box-sizing: border-box;
     }
     
     .navitems.open {
-        /* When open, set max-height to the remaining viewport height */
-        max-height: calc(100vh - 56px); 
-        padding: 10px 0; /* Add back padding when open */
+        height: calc(100vh - 56px); /* Full height of the viewport minus navbar height */
+        padding: 10px 0;
     }
 
     .navitems ul {
@@ -306,6 +300,7 @@ body {
 
     .navitems li {
         width: 100%;
+        padding: 10px 0;
     }
     
     .navitems a {
@@ -320,9 +315,13 @@ body {
     }
 
     /* Force dashboard items to stack */
-    .weather-item, .dashboard > div {
+    .weather-item {
         flex-basis: 100%;
-        min-width: unset;
+    }
+    
+    /* Make charts stack vertically on small screens */
+    .dashboard > div {
+        flex-basis: 100%;
     }
     
     /* Ensure charts themselves are responsive */
