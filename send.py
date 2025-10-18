@@ -42,7 +42,7 @@ def get_wind_dir():
     # Ensure 360 degrees becomes 0 degrees
     true_wind_dir = (true_wind_dir % 360)
     # Round to nearest 45°
-    wind_dir_rounded = int((true_wind_dir / 45) + 0.5) * 45
+    wind_dir_rounded = (int((true_wind_dir / 45) + 0.5) * 45) % 360
     return wind_dir_rounded
 
 wtemp = 0
