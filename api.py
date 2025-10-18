@@ -104,8 +104,6 @@ def latest():
 
     mydb = get_db_connection()
     mycursor = mydb.cursor()
-    
-    # MODIFICATION: Add WHERE clause to filter by location
     query = """
         SELECT date, time, location, windspeed, winddirection, wtemp, atemp
         FROM weatherdata
@@ -137,27 +135,34 @@ def trend10m():
     settings = load_settings()
     current_location = settings['location']
     
+    # Define the interval in seconds
+    INTERVAL_SECONDS = 15
+    
     mydb = get_db_connection()
     mycursor = mydb.cursor()
     
-    # MODIFICATION: Add WHERE clause to filter by location
-    query = """
-        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+    # SQL to group data into 15-second intervals over the last 10 minutes
+    query = f"""
+        SELECT 
+            FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
+            AVG(windspeed) AS avg_wind, 
+            MAX(windspeed) AS max_gust, 
+            AVG(winddirection) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
         AND location = %s
-        GROUP BY date, time
-        ORDER BY time ASC
+        GROUP BY interval_start
+        ORDER BY interval_start ASC
     """
     mycursor.execute(query, (current_location,))
     rows = mycursor.fetchall()
     mydb.close()
 
     data = [
-        {"time": str(row[1]), "avg_wind": row[2], "max_gust": row[3], "avg_dir": row[4]}
+        {"time": str(row[0]).split(' ')[1], "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
         for row in rows
     ]
-    print(f"Trend 10m data for {current_location}:", data)
+    print(f"Trend 10m data (15-sec intervals) for {current_location}:", data)
     return jsonify(data)
 
 
@@ -166,27 +171,32 @@ def trend1h():
     settings = load_settings()
     current_location = settings['location']
     
+    # Define the interval in seconds
+    INTERVAL_SECONDS = 60
+    
     mydb = get_db_connection()
     mycursor = mydb.cursor()
-    
-    # MODIFICATION: Add WHERE clause to filter by location
-    query = """
-        SELECT date, time, AVG(windspeed) AS avg_wind, MAX(windspeed) AS max_gust, AVG(winddirection) AS avg_dir
+    query = f"""
+        SELECT 
+            FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
+            AVG(windspeed) AS avg_wind, 
+            MAX(windspeed) AS max_gust, 
+            AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+        WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 60 MINUTE)
         AND location = %s
-        GROUP BY date, time
-        ORDER BY time ASC
+        GROUP BY interval_start
+        ORDER BY interval_start ASC
     """
     mycursor.execute(query, (current_location,))
     rows = mycursor.fetchall()
     mydb.close()
 
     data = [
-        {"time": str(row[1]), "avg_wind": row[2], "max_gust": row[3], "avg_dir": row[4]}
+        {"time": str(row[0]).split(' ')[1], "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
         for row in rows
     ]
-    print(f"Trend 1h data for {current_location}:", data)
+    print(f"Trend 1h data (1-min intervals) for {current_location}:", data)
     return jsonify(data)
 
 
@@ -195,28 +205,34 @@ def trend24h():
     settings = load_settings()
     current_location = settings['location']
     
+    # Define the interval in seconds
+    INTERVAL_SECONDS = 900
+    
     mydb = get_db_connection()
     mycursor = mydb.cursor()
     
-    # MODIFICATION: Add WHERE clause to filter by location
-    query = """
-        SELECT AVG(windspeed), MAX(windspeed), AVG(winddirection)
+    # SQL to group data into 15-second intervals over the last 10 minutes
+    query = f"""
+        SELECT 
+            FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
+            AVG(windspeed) AS avg_wind, 
+            MAX(windspeed) AS max_gust, 
+            AVG(winddirection) AS avg_dir
         FROM weatherdata
-        WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 1440 MINUTE)
         AND location = %s
+        GROUP BY interval_start
+        ORDER BY interval_start ASC
     """
     mycursor.execute(query, (current_location,))
-    row = mycursor.fetchone()
+    rows = mycursor.fetchall()
     mydb.close()
 
-    data = []
-    if row and row[0] is not None:
-        data.append({
-            "avg_wind": row[0],
-            "max_gust": row[1],
-            "avg_dir": row[2]
-        })
-    print(f"Trend 24h data for {current_location}:", data)
+    data = [
+        {"time": str(row[0]).split(' ')[1], "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
+        for row in rows
+    ]
+    print(f"Trend 24h for {current_location}:", data)
     return jsonify(data)
 
 
