@@ -57,7 +57,7 @@ def save_settings(settings):
 def generate_timestamps(interval_seconds, duration_minutes):
     now = datetime.datetime.now()
     timestamps = [
-        (now - datetime.timedelta(seconds=i * interval_seconds)).strftime('%Y-%m-%d %H:%M:%S')
+        (now - datetime.timedelta(seconds=i * interval_seconds)).strftime('%d-%m-%Y %H:%M:%S')
         for i in range(int(duration_minutes * 60 / interval_seconds))
     ]
     return timestamps
