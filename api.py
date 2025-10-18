@@ -265,7 +265,7 @@ def generate_forecast():
             model=OLLAMA_MODEL,
             messages=[{
                 "role": "user",
-                "content": f"Hourly wind data for {current_location}:\n{data_string}\nYou are an expert meteorologist. Predict weather for next 2 days from now including today for every 3 hours. Provide speed in knots and direction in degrees. Analyse recent situation too. Don't have any fluff. Talk as if you are just a forecast on a website. Don't ask questions. The date is {datetime.datetime.now().strftime('%Y-%m-%d')}. The time is {datetime.datetime.now().strftime('%H:%M')}. Don't add notes."
+                "content": f"Hourly wind data for {current_location}:\n{data_string}\nYou are an expert meteorologist. Predict weather for next 2 days from now including today for every 3 hours. Provide speed in knots and direction in degrees. Analyse recent situation too. Don't have any fluff. Talk as if you are just a forecast on a website. Don't ask questions. The date is {datetime.datetime.now().strftime('%Y-%m-%d')}. The time is {datetime.datetime.now().strftime('%H:%M')}."
             }]
         )
         forecast_text = response["message"]["content"]
