@@ -277,6 +277,22 @@ def generate_forecast():
         return jsonify({"error": str(e)}), 500
 
 
+def get_wind_dir():
+    """Get true wind direction using wind vane and corrected compass heading."""
+    raw_value = read_channel(1)
+
+    # Map raw value to 0–360°
+    relative_wind_dir = ((raw_value - 199) / (1014 - 199)) * 360
+
+    compass_heading = cmp.get_bearing()  # 0–360°
+
+    true_wind_dir = (relative_wind_dir + compass_heading) % 360
+
+    # Round to nearest 45°
+    wind_dir_rounded = int((true_wind_dir / 45) + 0.5) * 45
+    return wind_dir_rounded
+
+
 # --- MAIN ---
 if __name__ == "__main__":
     # Ensure a default config file exists on startup if it doesn't
