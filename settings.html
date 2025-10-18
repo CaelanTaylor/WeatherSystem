@@ -5,8 +5,6 @@
         <title>Settings - WindScout</title>
         <link rel="stylesheet" href="style.css">
         <script>
-            // --- CONFIGURE YOUR API URL HERE ---
-            // Based on your analysis.html, this is the correct URL.
             const API_BASE_URL = 'http://192.168.192.186:5001'; 
             // -----------------------------------
 
@@ -60,8 +58,6 @@
                     alert('An error occurred while saving settings. Check API connectivity.');
                 }
             }
-
-            // Load settings when the page loads
             window.onload = loadSettings;
         </script>
     </head>
@@ -72,9 +68,10 @@
             </div>
             <div class="navitems">
                 <ul>
-                    <li><a href="index.html">LiveWeather</a></li>
+                    <li><a href="index.html">Live Weather</a></li>
                     <li><a href="10mtrend.html">10 Minute Trend</a></li>
                     <li><a href="1htrend.html">1 Hour Trend</a></li>
+                    <li><a href="24htrend.html">24 Hour Trend</a></li>
                     <li><a href="analysis.html">Analysis</a></li>
                     <li><a href="settings.html"><b>Settings</b></a></li>
                 </ul>

@@ -1,32 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>24 Hour Wind Trend - WindScout</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <div class="navbar">
-        <div class="logo">
-            <h1>WindScout</h1>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>24 Hour Wind Trend</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <div class="navbar">
+            <div class="logo">
+                <h1>WindScout</h1>
+            </div>
+            <div class="navitems">
+                <ul>
+                    <li><a href="index.html">Live Weather</a></li>
+                    <li><a href="10mtrend.html">10 Minute Trend</a></li>
+                    <li><a href="1htrend.html">1 Hour Trend</a></li>
+                    <li><a href="24htrend.html"><b>24 Hour Trend</b></a></li>
+                    <li><a href="analysis.html">Analysis</a></li>
+                    <li><a href="settings.html">Settings</a></li>
+                </ul>
+            </div>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         </div>
-        <div class="navitems">
-            <ul>
-                <li><a href="index.html">LiveWeather</a></li>
-                <li><a href="10mtrend.html">10 Minute Trend</a></li>
-                <li><a href="1htrend.html">1 Hour Trend</a></li>
-                <li><a href="analysis.html">Analysis</a></li>
-                <li><a href="settings.html">Settings</a></li>
-                <li class="active"><a href="24htrend.html">24 Hour Trend</a></li>
-            </ul>
+        <div class="content">
+            <div class="title">
+                <h1>24 Hour Trend</h1>
+                <div class="line"></div>
+            </div>
         </div>
-    </div>
-    <div class="content">
-        <div class="title">
-            <h1>24 Hour Wind Trend</h1>
-            <div class="line"></div>
-        </div>
+        <br>
+        <br>
         <div class="dashboard">
             <div>
                 <canvas id="avgWindChart" width="400" height="200"></canvas>
@@ -141,7 +145,7 @@
             }
 
             drawTrendGraphs();
-            setInterval(drawTrendGraphs, 20000); // Auto update every 60 seconds
+            setInterval(drawTrendGraphs, 5000); // Auto update every 15 seconds
         </script>
-</body>
+    </body>
 </html>
