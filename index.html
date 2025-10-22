@@ -79,13 +79,22 @@
 
                 // Wind Direction
                 const winddir = parseFloat(data.winddirection) || 0;
-                document.getElementById('winddirection').textContent = `${winddir.toFixed(0)}\u00B0`;
+                document.getElementById('winddirection').textContent = `${winddir.toFixed(0)}°`;
+
                 // Smoothly rotate wind arrow (triangle)
                 document.getElementById('wind-arrow').style.transition = "transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)";
-                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${winddir} 50 50)`);
+
+                // Calculate the rotation angle, ensuring it wraps around correctly
+                let rotationAngle = winddir;
+                if (winddir > 180) {
+                    rotationAngle -= 360;
+                }
+
+                document.getElementById('wind-arrow').setAttribute('transform', `rotate(${rotationAngle} 50 50)`);
+
                 // Wind Dir Label
                 const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
-                const dirIndex = Math.round(winddir / 45) % 8;
+                const dirIndex = Math.round((winddir + 180) / 45) % 8; // Shift by 180 for correct label
                 document.getElementById('winddir-label').textContent = dirs[dirIndex];
 
                 // Last Updated
