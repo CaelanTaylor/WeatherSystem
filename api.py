@@ -120,10 +120,10 @@ def latest():
             "date": str(row[0]),
             "time": str(row[1]),
             "location": row[2],
-            "windspeed": float(row[3]), # FIXED: Cast to float
-            "winddirection": float(row[4]), # FIXED: Cast to float
-            "wtemp": float(row[5]), # FIXED: Cast to float
-            "atemp": float(row[6]), # FIXED: Cast to float
+            "windspeed": float(row[3]),
+            "winddirection": float(row[4]),
+            "wtemp": float(row[5]),
+            "atemp": float(row[6]),
         }
         print(f"Latest data for {current_location}:", data)
         return jsonify(data)
@@ -145,9 +145,9 @@ def trend10m():
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            AVG(windspeed) AS avg_wind, 
-            MAX(windspeed) AS max_gust, 
-            AVG(winddirection) AS avg_dir
+            CAST(AVG(windspeed) AS DOUBLE) AS avg_wind, 
+            CAST(MAX(windspeed) AS DOUBLE) AS max_gust, 
+            CAST(AVG(winddirection) AS DOUBLE) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
         AND location = %s
@@ -159,7 +159,7 @@ def trend10m():
     mydb.close()
 
     data = [
-        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])} # FIXED: Cast to float
+        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])}
         for row in rows
     ]
     print(f"Trend 10m data (15-sec intervals) for {current_location}:", data)
@@ -179,9 +179,9 @@ def trend1h():
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            AVG(windspeed) AS avg_wind, 
-            MAX(windspeed) AS max_gust, 
-            AVG(winddirection) AS avg_dir
+            CAST(AVG(windspeed) AS DOUBLE) AS avg_wind, 
+            CAST(MAX(windspeed) AS DOUBLE) AS max_gust, 
+            CAST(AVG(winddirection) AS DOUBLE) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 60 MINUTE)
         AND location = %s
@@ -193,7 +193,7 @@ def trend1h():
     mydb.close()
 
     data = [
-        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])} # FIXED: Cast to float
+        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])}
         for row in rows
     ]
     print(f"Trend 1h data (1-min intervals) for {current_location}:", data)
@@ -215,9 +215,9 @@ def trend24h():
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            AVG(windspeed) AS avg_wind, 
-            MAX(windspeed) AS max_gust, 
-            AVG(winddirection) AS avg_dir
+            CAST(AVG(windspeed) AS DOUBLE) AS avg_wind, 
+            CAST(MAX(windspeed) AS DOUBLE) AS max_gust, 
+            CAST(AVG(winddirection) AS DOUBLE) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 1440 MINUTE)
         AND location = %s
@@ -229,7 +229,7 @@ def trend24h():
     mydb.close()
 
     data = [
-        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])} # FIXED: Cast to float
+        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])}
         for row in rows
     ]
     print(f"Trend 24h for {current_location}:", data)
@@ -265,6 +265,7 @@ def generate_forecast():
         for row in hourly_data:
             ts = row[0] or "unknown"
             try:
+                # Ensuring these are always floats for the LLM prompt
                 avg_w = float(row[1]) if row[1] is not None else 0.0
                 max_g = float(row[2]) if row[2] is not None else 0.0
                 avg_d = float(row[3]) if row[3] is not None else 0.0
