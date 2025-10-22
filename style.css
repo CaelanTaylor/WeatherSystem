@@ -91,28 +91,30 @@ body{
 /* Responsive Navbar */
 @media (max-width: 900px) {
     .navbar {
-        flex-direction: column;
-        align-items: stretch;
-        min-height: 44px;
-        padding: 0.5em 1vw;
+        /* FIX: Removed flex-direction: column so logo and toggle stay on one row */
+        justify-content: space-between;
+        align-items: center;
+        min-height: 56px;
+        padding: 0 4vw;
     }
 
     .logo {
-        margin-bottom: 0.5em;
+        /* No longer needs margin-bottom */
+        margin-right: auto;
     }
 
     .navitems {
-        justify-content: flex-end;
-        width: 100vw;
+        justify-content: flex-start;
+        width: 100%; /* FIX: Changed from 100vw to 100% to prevent overflow */
         margin: 0;
         display: none; /* Initially hidden */
         flex-direction: column;
         background: black;
         position: absolute;
         top: 56px;
-        right: 0;
+        left: 0; /* FIX: Changed from right: 0 to left: 0 for full width overlay */
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        z-index: 100;
+        z-index: 99; /* Lower z-index than toggle button */
     }
 
     .navitems.open {
@@ -122,14 +124,22 @@ body{
     .navitems ul {
         flex-direction: column;
         gap: 0.5em;
-        align-items: flex-end;
+        align-items: flex-start; /* Aligned left for better mobile usability */
         width: 100%;
         margin: 0;
         padding: 1em 2em;
     }
+    
+    .navitems ul li a {
+        display: block; /* Make links full width of the li */
+        padding: 0.5em 0;
+        width: 100%;
+        text-align: left; /* Align text to the left */
+    }
+    
     .menu-toggle {
         display: block;
-        margin-left: auto;
+        margin-left: 0; /* Removed auto since space-between handles positioning */
     }
 }
 
@@ -228,57 +238,6 @@ body{
     font-size: 1.2rem;
     font-family: 'outfit', Arial, sans-serif;
     color: #222;
-}
-
-/* Responsive Navbar */
-@media (max-width: 900px) {
-    .navbar {
-        flex-direction: column;
-        align-items: stretch;
-        min-height: 44px;
-        padding: 0.5em 1vw;
-    }
-
-    .logo {
-        margin-bottom: 0.5em;
-    }
-
-    .navitems {
-        justify-content: flex-end;
-        width: 100vw;
-        margin: 0;
-        display: none; /* Initially hidden */
-        flex-direction: column;
-        background: black;
-        position: absolute;
-        top: 56px;
-        right: 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        z-index: 100;
-    }
-
-    .navitems.open {
-        display: flex;
-    }
-
-    .navitems ul {
-        flex-direction: column;
-        gap: 0.5em;
-        align-items: flex-end;
-        width: 100%;
-        margin: 0;
-        padding: 1em 2em;
-    }
-}
-
-/* Even smaller screens */
-@media (max-width: 600px) {
-    .navbar h1 {
-        font-size: clamp(0.9rem, 6vw, 1.1rem);
-    }
-    .navitems ul li a {
-        font-size: clamp(0.9rem, 5vw, 1rem);
-    }
 }
 
 .circle-gauge, .compass-gauge {
