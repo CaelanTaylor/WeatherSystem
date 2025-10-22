@@ -219,7 +219,6 @@ body{
 }
 
 .weather-item .value {
-    /* Existing value font size (not used in current index.html but fixed for consistency) */
     font-size: 2.5rem; 
     font-weight: bold;
     color: #222;
@@ -245,9 +244,9 @@ body{
 /* GAUGE SIZING: Use clamp() for fluid, responsive size */
 .circle-gauge, .compass-gauge {
     position: relative;
-    /* Min 70px, Preferred 12vw, Max 150px */
-    width: clamp(70px, 12vw, 150px);
-    height: clamp(70px, 12vw, 150px);
+    /* Refined size: Min 90px, Preferred 15vw, Max 180px */
+    width: clamp(90px, 15vw, 180px);
+    height: clamp(90px, 15vw, 180px);
     margin: 0 auto 0.5rem auto;
     display: flex;
     align-items: center;
@@ -263,8 +262,8 @@ body{
 /* Scale gauge value text (the number in the middle) */
 .circle-gauge .gauge-value,
 .compass-gauge .gauge-value {
-    /* Min 1.2rem, Preferred 3.5vw, Max 2.5rem */
-    font-size: clamp(1.2rem, 3.5vw, 2.5rem);
+    /* Refined text size: Min 1.5rem, Preferred 4vw, Max 2.8rem */
+    font-size: clamp(1.5rem, 4vw, 2.8rem); 
     position: absolute;
     top: 50%;
     left: 50%;
@@ -272,10 +271,8 @@ body{
     font-weight: bold;
     color: #222;
     text-align: center;
-    white-space: nowrap;
-    width: 80%;
-    max-width: none;
-    word-break: break-word;
+    white-space: nowrap; 
+    max-width: 90%;
 }
 
 .thermometer {
@@ -318,13 +315,11 @@ body{
     }
     .weather-item {
         max-width: 90vw;
-        /* The padding will be handled by clamp() now, but keeping a simplified one for safety */
         padding: 1.2rem 0.5rem;
     }
-    /* Removed fixed size overrides for .circle-gauge and .compass-gauge */
 }
 
-/* Wind Speed Gauge - (Fixing the unused/future-used gauges too) */
+/* Wind Speed Gauge */
 .wind-speed-gauge {
     background: #fff;
     border-radius: 1rem;
@@ -335,13 +330,11 @@ body{
 }
 
 .wind-speed-gauge svg {
-    /* Changed from 100px to 100% to scale with its parent */
-    width: 100%; 
+    width: 100%;
     height: 100%;
 }
 
 .wind-speed-gauge .gauge-value {
-    /* Scale this number responsively */
     font-size: clamp(1.6rem, 4vw, 2.2rem);
     font-weight: bold;
     color: #222;
@@ -369,21 +362,18 @@ body{
     text-align: center;
 }
 
-/* Compass Gauge */
+/* Compass Gauge (removed redundant sizing) */
 .compass-gauge {
     position: relative;
-    /* Size is already set by the combined .circle-gauge, .compass-gauge block */
     margin: 0 auto 0.5rem auto;
 }
 
 .compass-gauge svg {
-    /* Changed from 100px to 100% to scale with its parent */
     width: 100%;
     height: 100%;
 }
 
 .compass-gauge .gauge-value {
-    /* Size is already set by the combined .circle-gauge, .compass-gauge block */
     position: absolute;
     top: 50%;
     left: 50%;
@@ -394,18 +384,8 @@ body{
     text-align: center;
 }
 
-/* Compass Value (Text below the gauge) */
-.compass-value {
-    /* Scale this text responsively */
-    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-    color: #222;
-    position: absolute;
-    top: 78%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    text-align: center;
-}
+/* Compass Value (The directional label - styled by .weather-item .unit now) */
+/* Removed .compass-value rule to avoid conflicts */
 
 #wind-arrow {
     transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
