@@ -91,7 +91,6 @@ body{
 /* Responsive Navbar */
 @media (max-width: 900px) {
     .navbar {
-        /* FIX: Removed flex-direction: column so logo and toggle stay on one row */
         justify-content: space-between;
         align-items: center;
         min-height: 56px;
@@ -99,22 +98,21 @@ body{
     }
 
     .logo {
-        /* No longer needs margin-bottom */
         margin-right: auto;
     }
 
     .navitems {
         justify-content: flex-start;
-        width: 100%; /* FIX: Changed from 100vw to 100% to prevent overflow */
+        width: 100%;
         margin: 0;
-        display: none; /* Initially hidden */
+        display: none;
         flex-direction: column;
         background: black;
         position: absolute;
         top: 56px;
-        left: 0; /* FIX: Changed from right: 0 to left: 0 for full width overlay */
+        left: 0;
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        z-index: 99; /* Lower z-index than toggle button */
+        z-index: 99;
     }
 
     .navitems.open {
@@ -124,22 +122,22 @@ body{
     .navitems ul {
         flex-direction: column;
         gap: 0.5em;
-        align-items: flex-start; /* Aligned left for better mobile usability */
+        align-items: flex-start;
         width: 100%;
         margin: 0;
         padding: 1em 2em;
     }
     
     .navitems ul li a {
-        display: block; /* Make links full width of the li */
+        display: block;
         padding: 0.5em 0;
         width: 100%;
-        text-align: left; /* Align text to the left */
+        text-align: left;
     }
     
     .menu-toggle {
         display: block;
-        margin-left: 0; /* Removed auto since space-between handles positioning */
+        margin-left: 0;
     }
 }
 
@@ -189,7 +187,8 @@ body{
     background: #fff;
     border-radius: 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    padding: 2rem 2.5rem;
+    /* Make padding responsive */
+    padding: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 4vw, 2.5rem);
     text-align: center;
     min-width: 140px;
     flex: 1 1 220px;
@@ -213,20 +212,23 @@ body{
 
 .weather-item .label {
     font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
+    /* Make label font size responsive */
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+    margin-bottom: clamp(0.5rem, 1vw, 1rem);
     letter-spacing: 1px;
 }
 
 .weather-item .value {
-    font-size: 2.5rem;
+    /* Existing value font size (not used in current index.html but fixed for consistency) */
+    font-size: 2.5rem; 
     font-weight: bold;
     color: #222;
     margin-bottom: 0.5rem;
 }
 
 .weather-item .unit {
-    font-size: 1rem;
+    /* Make unit font size responsive */
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
     color: #666;
     margin-top: 0.5rem;
 }
@@ -240,29 +242,39 @@ body{
     color: #222;
 }
 
+/* GAUGE SIZING: Use clamp() for fluid, responsive size */
 .circle-gauge, .compass-gauge {
     position: relative;
-    width: 100px;
-    height: 100px;
+    /* Min 70px, Preferred 12vw, Max 150px */
+    width: clamp(70px, 12vw, 150px);
+    height: clamp(70px, 12vw, 150px);
     margin: 0 auto 0.5rem auto;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+/* Ensure the SVG scales to 100% of its new responsive container */
+.circle-gauge svg, .compass-gauge svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Scale gauge value text (the number in the middle) */
 .circle-gauge .gauge-value,
 .compass-gauge .gauge-value {
+    /* Min 1.2rem, Preferred 3.5vw, Max 2.5rem */
+    font-size: clamp(1.2rem, 3.5vw, 2.5rem);
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -55%);
-    font-size: 1.6rem;
     font-weight: bold;
     color: #222;
     text-align: center;
     white-space: nowrap;
-    width: auto;
-    max-width: 80px;
+    width: 80%;
+    max-width: none;
     word-break: break-word;
 }
 
@@ -306,15 +318,13 @@ body{
     }
     .weather-item {
         max-width: 90vw;
+        /* The padding will be handled by clamp() now, but keeping a simplified one for safety */
         padding: 1.2rem 0.5rem;
     }
-    .circle-gauge, .compass-gauge {
-        width: 70px;
-        height: 70px;
-    }
+    /* Removed fixed size overrides for .circle-gauge and .compass-gauge */
 }
 
-/* Wind Speed Gauge */
+/* Wind Speed Gauge - (Fixing the unused/future-used gauges too) */
 .wind-speed-gauge {
     background: #fff;
     border-radius: 1rem;
@@ -325,12 +335,14 @@ body{
 }
 
 .wind-speed-gauge svg {
-    width: 100px;
-    height: 100px;
+    /* Changed from 100px to 100% to scale with its parent */
+    width: 100%; 
+    height: 100%;
 }
 
 .wind-speed-gauge .gauge-value {
-    font-size: 2.2rem;
+    /* Scale this number responsively */
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
     font-weight: bold;
     color: #222;
     position: absolute;
@@ -360,31 +372,32 @@ body{
 /* Compass Gauge */
 .compass-gauge {
     position: relative;
-    width: 100px;
-    height: 100px;
+    /* Size is already set by the combined .circle-gauge, .compass-gauge block */
     margin: 0 auto 0.5rem auto;
 }
 
 .compass-gauge svg {
-    width: 100px;
-    height: 100px;
+    /* Changed from 100px to 100% to scale with its parent */
+    width: 100%;
+    height: 100%;
 }
 
 .compass-gauge .gauge-value {
+    /* Size is already set by the combined .circle-gauge, .compass-gauge block */
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -55%);
-    font-size: 1.7rem;
     font-weight: bold;
     color: #222;
     width: 60px;
     text-align: center;
 }
 
-/* Compass Value */
+/* Compass Value (Text below the gauge) */
 .compass-value {
-    font-size: 1.1rem;
+    /* Scale this text responsively */
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
     color: #222;
     position: absolute;
     top: 78%;

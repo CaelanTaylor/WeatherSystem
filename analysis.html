@@ -20,6 +20,7 @@
                 <li><a href="settings.html">Settings</a></li>
             </ul>
         </div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     </div>
 
     <div class="content">
@@ -80,7 +81,9 @@
                     loadingIndicator.style.display = 'none';
                 });
         }
-
+        function toggleMenu() {
+            document.querySelector('.navitems').classList.toggle('open');
+        }
         // Auto-run forecast on page load
         updateForecast();
     </script>

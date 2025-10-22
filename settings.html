@@ -59,6 +59,9 @@
                 }
             }
             window.onload = loadSettings;
+            function toggleMenu() {
+                document.querySelector('.navitems').classList.toggle('open');
+            }
         </script>
     </head>
     <body>
@@ -76,6 +79,7 @@
                     <li><a href="settings.html"><b>Settings</b></a></li>
                 </ul>
             </div>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         </div>
         <div class="content">
             <div class="title">
