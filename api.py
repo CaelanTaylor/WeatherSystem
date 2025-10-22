@@ -244,8 +244,6 @@ def generate_forecast():
         
         mydb = get_db_connection()
         mycursor = mydb.cursor()
-        
-        # MODIFICATION: Add WHERE clause to filter by location
         query = """
             SELECT
                 DATE_FORMAT(TIMESTAMP(date, time), '%Y-%m-%d %H:00:00') AS hourly_timestamp,
@@ -263,8 +261,6 @@ def generate_forecast():
 
         if not hourly_data:
             return jsonify({"forecast": f"No historical data available for location: {current_location}."})
-
-        # --- Safe formatting ---
         data_string = ""
         for row in hourly_data:
             ts = row[0] or "unknown"
