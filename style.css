@@ -96,14 +96,16 @@ body{
         min-height: 44px;
         padding: 0.5em 1vw;
     }
+
     .logo {
         margin-bottom: 0.5em;
     }
+
     .navitems {
         justify-content: flex-end;
         width: 100vw;
         margin: 0;
-        display: none;
+        display: none; /* Initially hidden */
         flex-direction: column;
         background: black;
         position: absolute;
@@ -112,9 +114,11 @@ body{
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         z-index: 100;
     }
+
     .navitems.open {
         display: flex;
     }
+
     .navitems ul {
         flex-direction: column;
         gap: 0.5em;
@@ -234,14 +238,16 @@ body{
         min-height: 44px;
         padding: 0.5em 1vw;
     }
+
     .logo {
         margin-bottom: 0.5em;
     }
+
     .navitems {
         justify-content: flex-end;
         width: 100vw;
         margin: 0;
-        display: none;
+        display: none; /* Initially hidden */
         flex-direction: column;
         background: black;
         position: absolute;
@@ -250,9 +256,11 @@ body{
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         z-index: 100;
     }
+
     .navitems.open {
         display: flex;
     }
+
     .navitems ul {
         flex-direction: column;
         gap: 0.5em;
