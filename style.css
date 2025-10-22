@@ -127,14 +127,14 @@ body{
         margin: 0;
         padding: 1em 2em;
     }
-    
+
     .navitems ul li a {
         display: block;
         padding: 0.5em 0;
         width: 100%;
         text-align: left;
     }
-    
+
     .menu-toggle {
         display: block;
         margin-left: 0;
@@ -167,7 +167,7 @@ body{
 .title h1{
     font-size:4rem;
     margin:0;
-    text-align:center; 
+    text-align:center;
 }
 
 .title .line{
@@ -219,7 +219,7 @@ body{
 }
 
 .weather-item .value {
-    font-size: 2.5rem; 
+    font-size: 2.5rem;
     font-weight: bold;
     color: #222;
     margin-bottom: 0.5rem;
@@ -263,16 +263,19 @@ body{
 .circle-gauge .gauge-value,
 .compass-gauge .gauge-value {
     /* Refined text size: Min 1.5rem, Preferred 4vw, Max 2.8rem */
-    font-size: clamp(1.5rem, 4vw, 2.8rem); 
+    font-size: clamp(1.5rem, 4vw, 2.8rem);
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -55%);
+    /* Centering Fix: -50% for X and Y for perfect center */
+    transform: translate(-50%, -50%);
     font-weight: bold;
     color: #222;
     text-align: center;
-    white-space: nowrap; 
+    white-space: nowrap;
     max-width: 90%;
+    /* Ensure z-index is high enough to sit above the SVG */
+    z-index: 2;
 }
 
 .thermometer {
@@ -349,7 +352,7 @@ body{
     color: #666;
 }
 
-/* Wind Speed Value */
+/* Wind Speed Value (Redundant, but keeping for completeness if used elsewhere) */
 .speed-value {
     font-size: 1.7rem;
     font-weight: bold;
@@ -372,20 +375,6 @@ body{
     width: 100%;
     height: 100%;
 }
-
-.compass-gauge .gauge-value {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -55%);
-    font-weight: bold;
-    color: #222;
-    width: 60px;
-    text-align: center;
-}
-
-/* Compass Value (The directional label - styled by .weather-item .unit now) */
-/* Removed .compass-value rule to avoid conflicts */
 
 #wind-arrow {
     transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
