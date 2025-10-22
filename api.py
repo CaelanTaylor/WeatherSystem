@@ -141,13 +141,13 @@ def trend10m():
     mydb = get_db_connection()
     mycursor = mydb.cursor()
     
-    # FIX: Use CONVERT to CHAR(50) in SQL to return a string, bypassing numeric type corruption/capping.
+    # FIX: Use nested CAST to force high precision DECIMAL(10, 5) before converting to a CHAR string.
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            CONVERT(AVG(windspeed), CHAR(50)) AS avg_wind, 
-            CONVERT(MAX(windspeed), CHAR(50)) AS max_gust, 
-            CONVERT(AVG(winddirection), CHAR(50)) AS avg_dir
+            CONVERT(CAST(AVG(windspeed) AS DECIMAL(10, 5)), CHAR(50)) AS avg_wind, 
+            CONVERT(CAST(MAX(windspeed) AS DECIMAL(10, 5)), CHAR(50)) AS max_gust, 
+            CONVERT(CAST(AVG(winddirection) AS DECIMAL(10, 5)), CHAR(50)) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
         AND location = %s
@@ -176,13 +176,13 @@ def trend1h():
     
     mydb = get_db_connection()
     mycursor = mydb.cursor()
-    # FIX: Use CONVERT to CHAR(50) in SQL to return a string, bypassing numeric type corruption/capping.
+    # FIX: Use nested CAST to force high precision DECIMAL(10, 5) before converting to a CHAR string.
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            CONVERT(AVG(windspeed), CHAR(50)) AS avg_wind, 
-            CONVERT(MAX(windspeed), CHAR(50)) AS max_gust, 
-            CONVERT(AVG(winddirection), CHAR(50)) AS avg_dir
+            CONVERT(CAST(AVG(windspeed) AS DECIMAL(10, 5)), CHAR(50)) AS avg_wind, 
+            CONVERT(CAST(MAX(windspeed) AS DECIMAL(10, 5)), CHAR(50)) AS max_gust, 
+            CONVERT(CAST(AVG(winddirection) AS DECIMAL(10, 5)), CHAR(50)) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 60 MINUTE)
         AND location = %s
@@ -212,13 +212,13 @@ def trend24h():
     mydb = get_db_connection()
     mycursor = mydb.cursor()
     
-    # FIX: Use CONVERT to CHAR(50) in SQL to return a string, bypassing numeric type corruption/capping.
+    # FIX: Use nested CAST to force high precision DECIMAL(10, 5) before converting to a CHAR string.
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            CONVERT(AVG(windspeed), CHAR(50)) AS avg_wind, 
-            CONVERT(MAX(windspeed), CHAR(50)) AS max_gust, 
-            CONVERT(AVG(winddirection), CHAR(50)) AS avg_dir
+            CONVERT(CAST(AVG(windspeed) AS DECIMAL(10, 5)), CHAR(50)) AS avg_wind, 
+            CONVERT(CAST(MAX(windspeed) AS DECIMAL(10, 5)), CHAR(50)) AS max_gust, 
+            CONVERT(CAST(AVG(winddirection) AS DECIMAL(10, 5)), CHAR(50)) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 1440 MINUTE)
         AND location = %s
