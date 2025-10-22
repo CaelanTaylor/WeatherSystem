@@ -120,10 +120,10 @@ def latest():
             "date": str(row[0]),
             "time": str(row[1]),
             "location": row[2],
-            "windspeed": row[3],
-            "winddirection": row[4],
-            "wtemp": row[5],
-            "atemp": row[6],
+            "windspeed": float(row[3]), # FIXED: Cast to float
+            "winddirection": float(row[4]), # FIXED: Cast to float
+            "wtemp": float(row[5]), # FIXED: Cast to float
+            "atemp": float(row[6]), # FIXED: Cast to float
         }
         print(f"Latest data for {current_location}:", data)
         return jsonify(data)
@@ -159,7 +159,7 @@ def trend10m():
     mydb.close()
 
     data = [
-        {"time": str(row[0]).split(' ')[1], "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
+        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])} # FIXED: Cast to float
         for row in rows
     ]
     print(f"Trend 10m data (15-sec intervals) for {current_location}:", data)
@@ -193,7 +193,7 @@ def trend1h():
     mydb.close()
 
     data = [
-        {"time": str(row[0]).split(' ')[1], "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
+        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])} # FIXED: Cast to float
         for row in rows
     ]
     print(f"Trend 1h data (1-min intervals) for {current_location}:", data)
@@ -229,7 +229,7 @@ def trend24h():
     mydb.close()
 
     data = [
-        {"time": str(row[0]).split(' ')[1], "avg_wind": row[1], "max_gust": row[2], "avg_dir": row[3]}
+        {"time": str(row[0]).split(' ')[1], "avg_wind": float(row[1]), "max_gust": float(row[2]), "avg_dir": float(row[3])} # FIXED: Cast to float
         for row in rows
     ]
     print(f"Trend 24h for {current_location}:", data)
