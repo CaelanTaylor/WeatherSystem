@@ -141,13 +141,13 @@ def trend10m():
     mydb = get_db_connection()
     mycursor = mydb.cursor()
     
-    # SQL to group data into 15-second intervals over the last 10 minutes
+    # FIX: Use CONVERT to CHAR(50) in SQL to return a string, bypassing numeric type corruption/capping.
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            CAST(AVG(windspeed) AS DOUBLE) AS avg_wind, 
-            CAST(MAX(windspeed) AS DOUBLE) AS max_gust, 
-            CAST(AVG(winddirection) AS DOUBLE) AS avg_dir
+            CONVERT(AVG(windspeed), CHAR(50)) AS avg_wind, 
+            CONVERT(MAX(windspeed), CHAR(50)) AS max_gust, 
+            CONVERT(AVG(winddirection), CHAR(50)) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
         AND location = %s
@@ -176,12 +176,13 @@ def trend1h():
     
     mydb = get_db_connection()
     mycursor = mydb.cursor()
+    # FIX: Use CONVERT to CHAR(50) in SQL to return a string, bypassing numeric type corruption/capping.
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            CAST(AVG(windspeed) AS DOUBLE) AS avg_wind, 
-            CAST(MAX(windspeed) AS DOUBLE) AS max_gust, 
-            CAST(AVG(winddirection) AS DOUBLE) AS avg_dir
+            CONVERT(AVG(windspeed), CHAR(50)) AS avg_wind, 
+            CONVERT(MAX(windspeed), CHAR(50)) AS max_gust, 
+            CONVERT(AVG(winddirection), CHAR(50)) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 60 MINUTE)
         AND location = %s
@@ -211,13 +212,13 @@ def trend24h():
     mydb = get_db_connection()
     mycursor = mydb.cursor()
     
-    # SQL to group data into 15-second intervals over the last 10 minutes
+    # FIX: Use CONVERT to CHAR(50) in SQL to return a string, bypassing numeric type corruption/capping.
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
-            CAST(AVG(windspeed) AS DOUBLE) AS avg_wind, 
-            CAST(MAX(windspeed) AS DOUBLE) AS max_gust, 
-            CAST(AVG(winddirection) AS DOUBLE) AS avg_dir
+            CONVERT(AVG(windspeed), CHAR(50)) AS avg_wind, 
+            CONVERT(MAX(windspeed), CHAR(50)) AS max_gust, 
+            CONVERT(AVG(winddirection), CHAR(50)) AS avg_dir
         FROM weatherdata
         WHERE CONCAT(date, ' ', time) >= DATE_SUB(NOW(), INTERVAL 1440 MINUTE)
         AND location = %s
