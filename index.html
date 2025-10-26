@@ -93,7 +93,7 @@
 
                 // Wind Dir Label
                 const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
-                const dirIndex = Math.round((winddir + 180) / 45) % 8; // Shift by 180 for correct label
+                const dirIndex = Math.round(winddir / 45) % 8;
                 document.getElementById('winddir-label').textContent = dirs[dirIndex];
 
                 // Last Updated
