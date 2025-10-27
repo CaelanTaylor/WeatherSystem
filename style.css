@@ -180,6 +180,7 @@ body{
 .content {
     width: 60vw;
     margin: 0 auto;
+    margin-top: 10vh;
 }
 
 /* Dashboard styling */
