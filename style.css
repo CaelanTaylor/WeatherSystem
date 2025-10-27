@@ -380,20 +380,3 @@ body{
     align-items: center;
     margin-top: 1rem;
 }
-
-.settings-form label {
-    margin-bottom: 0.5rem;
-    text-align: center;
-}
-
-.settings-form input[type="text"],
-.settings-form input[type="number"],
-.settings-form select {
-    width: 80%;
-    max-width: 300px;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
