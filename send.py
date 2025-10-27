@@ -58,7 +58,7 @@ while True:
     data_str = ','.join(str(x) for x in data_list)
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(3)  # Optional: timeout after 3 seconds
+            s.settimeout(3)  # Timeout after 3 seconds
             s.connect((HOST, PORT))
             s.sendall(data_str.encode('utf-8'))
     except Exception:
