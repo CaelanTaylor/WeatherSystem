@@ -387,3 +387,10 @@ body{
 .navitems li.active a {
     font-weight: bold;
 }
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1rem;
+}
