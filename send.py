@@ -13,7 +13,7 @@ spi.open(0, 0)  # (bus 0, device 0 → CE0)
 spi.max_speed_hz = 1350000  # 1.35 MHz
 
 def read_channel(channel):
-    """Read analog value from the MCP3008 ADC (channel 0-7)."""
+    #Read analog value from the MCP3008 ADC (channel 0-7).
     if channel < 0 or channel > 7:
         raise ValueError("Channel must be 0-7")
     
@@ -23,7 +23,7 @@ def read_channel(channel):
     return data
 
 def get_wind_speed():
-    """Get wind speed from the ZTS-3000-FSJT-V05 sensor (channel 7)."""
+    #Get wind speed from the ZTS-3000-FSJT-V05 sensor (channel 7).
     raw_value = read_channel(7)
     wind_speed = (raw_value / 1023.0) * 30  # Linear mapping: 0–1023 → 0–30 m/s
     wind_speed_knots = wind_speed * 1.94384 * 1.5  # Convert to knots and apply calibration factor
@@ -32,7 +32,7 @@ def get_wind_speed():
     return wind_speed_knots
 
 def get_wind_dir():
-    """Get true wind direction using wind vane and corrected compass heading."""
+    #Get true wind direction using wind vane and corrected compass heading.
     raw_value = read_channel(1)
     # Map raw value to 0–360°
     relative_wind_dir = ((raw_value - 199) / (1014 - 199)) * 360
