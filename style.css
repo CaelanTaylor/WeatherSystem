@@ -76,7 +76,6 @@ body{
     background:rgba(255,255,255,0.08);
 }
 
-/* Hamburger button styling */
 .menu-toggle {
     display: none;
     background: none;
@@ -88,7 +87,6 @@ body{
     z-index: 101;
 }
 
-/* Responsive Navbar */
 @media (max-width: 900px) {
     .navbar {
         justify-content: space-between;
@@ -141,7 +139,6 @@ body{
     }
 }
 
-/* Even smaller screens */
 @media (max-width: 600px) {
     .navbar h1 {
         font-size: clamp(0.9rem, 6vw, 1.1rem);
@@ -186,12 +183,10 @@ body{
     margin-top: 2vh;
 }
 
-/* Dashboard styling */
 .weather-item {
     background: #fff;
     border-radius: 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    /* Make padding responsive */
     padding: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 4vw, 2.5rem);
     text-align: center;
     min-width: 140px;
@@ -216,7 +211,6 @@ body{
 
 .weather-item .label {
     font-weight: bold;
-    /* Make label font size responsive */
     font-size: clamp(0.9rem, 1.5vw, 1.2rem);
     margin-bottom: clamp(0.5rem, 1vw, 1rem);
     letter-spacing: 1px;
@@ -230,7 +224,6 @@ body{
 }
 
 .weather-item .unit {
-    /* Make unit font size responsive */
     font-size: clamp(0.8rem, 1.2vw, 1rem);
     color: #666;
     margin-top: 0.5rem;
@@ -245,10 +238,8 @@ body{
     color: #222;
 }
 
-/* GAUGE SIZING: Use clamp() for fluid, responsive size */
 .circle-gauge, .compass-gauge {
     position: relative;
-    /* Refined size: Min 90px, Preferred 15vw, Max 180px */
     width: clamp(90px, 15vw, 180px);
     height: clamp(90px, 15vw, 180px);
     margin: 0 auto 0.5rem auto;
@@ -257,28 +248,23 @@ body{
     justify-content: center;
 }
 
-/* Ensure the SVG scales to 100% of its new responsive container */
 .circle-gauge svg, .compass-gauge svg {
     width: 100%;
     height: 100%;
 }
 
-/* Scale gauge value text (the number in the middle) */
 .circle-gauge .gauge-value,
 .compass-gauge .gauge-value {
-    /* Refined text size: Min 1.5rem, Preferred 4vw, Max 2.8rem */
     font-size: clamp(1.5rem, 4vw, 2.8rem);
     position: absolute;
     top: 50%;
     left: 50%;
-    /* Centering Fix: -50% for X and Y for perfect center */
     transform: translate(-50%, -50%);
     font-weight: bold;
     color: #222;
     text-align: center;
     white-space: nowrap;
     max-width: 90%;
-    /* Ensure z-index is high enough to sit above the SVG */
     z-index: 2;
 }
 
@@ -356,7 +342,7 @@ body{
     color: #666;
 }
 
-/* Wind Speed Value (Redundant, but keeping for completeness if used elsewhere) */
+/* Wind Speed Value */
 .speed-value {
     font-size: 1.7rem;
     font-weight: bold;
@@ -369,7 +355,7 @@ body{
     text-align: center;
 }
 
-/* Compass Gauge (removed redundant sizing) */
+/* Compass Gauge */
 .compass-gauge {
     position: relative;
     margin: 0 auto 0.5rem auto;
@@ -393,4 +379,21 @@ body{
     flex-direction: column;
     align-items: center;
     margin-top: 1rem;
+}
+
+.settings-form label {
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.settings-form input[type="text"],
+.settings-form input[type="number"],
+.settings-form select {
+    width: 80%;
+    max-width: 300px;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
