@@ -43,16 +43,13 @@ def get_wind_dir():
     wind_dir_rounded = (int((true_wind_dir / 45) + 0.5) * 45) % 360
     return wind_dir_rounded
 
-wtemp = 0
-atemp = 0
-
 # Send data over socket
 HOST = '192.168.192.186'
 PORT = 50000
 
 while True:
     time.sleep(0.5)  # Wait for 0.5 seconds between readings
-    data_list = [get_wind_speed(), get_wind_dir(), wtemp, atemp]
+    data_list = [get_wind_speed(), get_wind_dir()]
     data_str = ','.join(str(x) for x in data_list)
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

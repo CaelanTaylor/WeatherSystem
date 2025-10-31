@@ -10,7 +10,7 @@ import os   # Added for file path checks
 CONFIG_FILE = "config.json"
 
 # Set Variables
-global msg, message, windspd, winddir, wtemp, atemp, data
+global msg, message, windspd, winddir, data
 message = None
 msg = None  
 data = None
@@ -119,14 +119,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 data_list = data_str.split(',')
                 
                 # Check if the data list has the expected 4 elements
-                if len(data_list) == 4:
+                if len(data_list) == 2:
                     try:
-                        windspd, winddir, wtemp, atemp = map(float, data_list)
+                        windspd, winddir = map(float, data_list)
                     except ValueError:
                         print(f"Received malformed data: {data_str}")
                         continue # Skip to the next iteration
-                        
-                    print(f"Received data: Wind Speed={windspd}, Direction={winddir}, Water Temp={wtemp}, Air Temp={atemp} at {location}")
                     
                     if enable_storage and mydb and mycursor:
                         # Get date and time in MySQL format
@@ -134,8 +132,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         currtime = gettime()
                         
                         # Prepare and execute SQL
-                        sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection, wtemp, atemp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                        val = (date, currtime, location, windspd, winddir, wtemp, atemp)
+                        sql = "INSERT INTO weatherdata (date, time, location, windspeed, winddirection) VALUES (%s, %s, %s, %s, %s)"
+                        val = (date, currtime, location, windspd, winddir)
                         try:
                             mycursor.execute(sql, val)
                             mydb.commit()
