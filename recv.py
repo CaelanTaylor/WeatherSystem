@@ -137,7 +137,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         try:
                             mycursor.execute(sql, val)
                             mydb.commit()
-                            # print("Data saved to database.") # Uncomment for more verbose logging
                         except mysql.connector.Error as err:
                             print(f"Error saving data to MySQL: {err}. The connection might be stale.")
                             # Attempt to re-establish connection if it failed

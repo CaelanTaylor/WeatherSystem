@@ -72,7 +72,7 @@ def get_db_connection():
     )
 
 
-# --- ROUTES ---
+#settings route
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings_route():
@@ -96,6 +96,7 @@ def settings_route():
         else:
             return jsonify({"error": "Could not save settings due to file system error"}), 500
 
+#dashboard route
 
 @app.route('/latest')
 def latest():
@@ -127,6 +128,7 @@ def latest():
         return jsonify(data)
     return jsonify({"error": f"No data found for location: {current_location}"}), 404
 
+#10m trend route
 
 @app.route('/trend10m')
 def trend10m():
@@ -135,11 +137,10 @@ def trend10m():
     
     # Define the interval in seconds
     INTERVAL_SECONDS = 15
-    
+
     mydb = get_db_connection()
     mycursor = mydb.cursor()
-    
-    # FIX: Use nested CAST to force high precision DECIMAL(10, 5) before converting to a CHAR string.
+
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
@@ -163,6 +164,7 @@ def trend10m():
     print(f"Trend 10m data (15-sec intervals) for {current_location}:", data)
     return jsonify(data)
 
+#1h trend route
 
 @app.route('/trend1h')
 def trend1h():
@@ -174,7 +176,6 @@ def trend1h():
     
     mydb = get_db_connection()
     mycursor = mydb.cursor()
-    # FIX: Use nested CAST to force high precision DECIMAL(10, 5) before converting to a CHAR string.
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
@@ -198,6 +199,7 @@ def trend1h():
     print(f"Trend 1h data (1-min intervals) for {current_location}:", data)
     return jsonify(data)
 
+#24h trend route
 
 @app.route('/trend24h')
 def trend24h():
@@ -210,7 +212,6 @@ def trend24h():
     mydb = get_db_connection()
     mycursor = mydb.cursor()
     
-    # FIX: Use nested CAST to force high precision DECIMAL(10, 5) before converting to a CHAR string.
     query = f"""
         SELECT 
             FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONCAT(date, ' ', time)) / {INTERVAL_SECONDS}) * {INTERVAL_SECONDS}) AS interval_start,
@@ -234,6 +235,7 @@ def trend24h():
     print(f"Trend 24h for {current_location}:", data)
     return jsonify(data)
 
+#AI forecast route
 
 @app.route('/generate_forecast', methods=['POST'])
 def generate_forecast():
