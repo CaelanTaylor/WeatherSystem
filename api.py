@@ -105,7 +105,7 @@ def latest():
     mydb = get_db_connection()
     mycursor = mydb.cursor()
     query = """
-        SELECT date, time, location, windspeed, winddirection, wtemp, atemp
+        SELECT date, time, location, windspeed, winddirection
         FROM weatherdata
         WHERE location = %s
         ORDER BY date DESC, time DESC
@@ -122,8 +122,6 @@ def latest():
             "location": row[2],
             "windspeed": float(row[3]),
             "winddirection": float(row[4]),
-            "wtemp": float(row[5]),
-            "atemp": float(row[6]),
         }
         print(f"Latest data for {current_location}:", data)
         return jsonify(data)
