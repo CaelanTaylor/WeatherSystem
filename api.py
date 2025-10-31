@@ -126,7 +126,8 @@ def latest():
         }
         print(f"Latest data for {current_location}:", data)
         return jsonify(data)
-    return jsonify({"error": f"No data found for location: {current_location}"}), 404
+    else:
+        return jsonify({"error": f"No data found for location: {current_location}"}), 404
 
 #10m trend route
 
