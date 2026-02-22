@@ -8,7 +8,7 @@ import os
 import traceback
 
 # --- CONFIGURATION ---
-OLLAMA_HOST = "http://ai.local:11434"
+OLLAMA_HOST = "http://localhost:11434"
 OLLAMA_MODEL = "gemma3:4b"
 CONFIG_FILE = "config.json" 
 
