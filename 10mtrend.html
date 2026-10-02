@@ -36,9 +36,6 @@
                 <canvas id="avgWindChart" width="400" height="200"></canvas>
             </div>
             <div>
-                <canvas id="gustChart" width="400" height="200"></canvas>
-            </div>
-            <div>
                 <canvas id="dirChart" width="400" height="200"></canvas>
             </div>
         </div>
@@ -107,27 +104,6 @@
                     avgWindChart.data.datasets[0].data = avgWind;
                     avgWindChart.options = windOptions;
                     avgWindChart.update();
-                }
-
-                if (!gustChart) {
-                    gustChart = new Chart(document.getElementById('gustChart'), {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Highest Gust (knots)',
-                                data: maxGust,
-                                borderColor: 'red',
-                                fill: false
-                            }]
-                        },
-                        options: windOptions
-                    });
-                } else {
-                    gustChart.data.labels = labels;
-                    gustChart.data.datasets[0].data = maxGust;
-                    gustChart.options = windOptions;
-                    gustChart.update();
                 }
 
                 if (!dirChart) {
